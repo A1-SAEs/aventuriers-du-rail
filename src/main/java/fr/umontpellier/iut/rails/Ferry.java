@@ -1,11 +1,11 @@
 package fr.umontpellier.iut.rails;
 
 public class Ferry extends Route {
-    /**
-     * Nombre de locomotives qu'un joueur doit payer pour capturer le ferry
-     */
+
+    // Nombre de locomotives qu'un joueur doit payer pour capturer le ferry
     private int nbLocomotives;
 
+    //////Initialisation d'un ferry//////
     public Ferry(Ville ville1, Ville ville2, int longueur, CouleurWagon couleur, int nbLocomotives) {
         super(ville1, ville2, longueur, couleur);
         this.nbLocomotives = nbLocomotives;

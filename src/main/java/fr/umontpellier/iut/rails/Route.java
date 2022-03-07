@@ -3,32 +3,26 @@ package fr.umontpellier.iut.rails;
 import java.util.HashMap;
 
 public class Route {
-    /**
-     * Première extrémité
-     */
+
+    // Première extrémité
     private Ville ville1;
-    /**
-     * Deuxième extrémité
-     */
+
+    // Deuxième extrémité
     private Ville ville2;
-    /**
-     * Nombre de segments
-     */
+
+    // Nombre de segments
     private int longueur;
-    /**
-     * CouleurWagon pour capturer la route (éventuellement GRIS, mais pas LOCOMOTIVE)
-     */
+
+    // CouleurWagon pour capturer la route (éventuellement GRIS, mais pas LOCOMOTIVE)
     private CouleurWagon couleur;
-    /**
-     * Joueur qui a capturé la route (`null` si la route est encore à prendre)
-     */
+
+    // Joueur qui a capturé la route (`null` si la route est encore à prendre)
     private Joueur proprietaire;
-    /**
-     * Nom unique de la route. Ce nom est nécessaire pour résoudre l'ambiguïté entre les routes doubles
-     * (voir la classe Plateau pour plus de clarté)
-     */
+
+    // Nom unique de la route. Ce nom est nécessaire pour résoudre l'ambiguïté entre les routes doubles (voir la classe Plateau pour plus de clarté)
     private String nom;
 
+    //////Initialisation d'une route//////
     public Route(Ville ville1, Ville ville2, int longueur, CouleurWagon couleur) {
         this.ville1 = ville1;
         this.ville2 = ville2;
@@ -38,6 +32,7 @@ public class Route {
         proprietaire = null;
     }
 
+    //Getters & Setters
     public Ville getVille1() {
         return ville1;
     }
@@ -79,9 +74,7 @@ public class Route {
         return String.format("[%s - %s (%d, %s)]", ville1, ville2, longueur, couleur);
     }
 
-    /**
-     * @return un objet simple représentant les informations de la route
-     */
+    // @return un objet simple représentant les informations de la route
     public Object asPOJO() {
         HashMap<String, Object> data = new HashMap<>();
         data.put("nom", getNom());

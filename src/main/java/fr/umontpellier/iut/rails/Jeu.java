@@ -9,50 +9,39 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
 
 public class Jeu implements Runnable {
-    /**
-     * Liste des joueurs
-     */
+    // Liste des joueurs
     private List<Joueur> joueurs;
 
-    /**
-     * Le joueur dont c'est le tour
-     */
+    // Le joueur dont c'est le tour
     private Joueur joueurCourant;
-    /**
-     * Liste des villes représentées sur le plateau de jeu
-     */
+
+    // Liste des villes représentées sur le plateau de jeu
     private List<Ville> villes;
-    /**
-     * Liste des routes du plateau de jeu
-     */
+
+    // Liste des routes du plateau de jeu
     private List<Route> routes;
-    /**
-     * Pile de pioche (face cachée)
-     */
+
+    // Pile de pioche (face cachée)
     private List<CouleurWagon> pileCartesWagon;
-    /**
-     * Cartes de la pioche face visible (normalement il y a 5 cartes face visible)
-     */
+
+    // Cartes de la pioche face visible (normalement il y a 5 cartes face visible)
     private List<CouleurWagon> cartesWagonVisibles;
-    /**
-     * Pile de cartes qui ont été défaussée au cours de la partie
-     */
+
+    // Pile de cartes qui ont été défaussée au cours de la partie
     private List<CouleurWagon> defausseCartesWagon;
-    /**
-     * Pile des cartes "Destination" (uniquement les destinations "courtes", les
-     * destinations "longues" sont distribuées au début de la partie et ne peuvent
-     * plus être piochées après)
-     */
+
+    // Pile des cartes "Destination" (uniquement les destinations "courtes", les
+    // destinations "longues" sont distribuées au début de la partie et ne peuvent
+    // plus être piochées après)
     private List<Destination> pileDestinations;
-    /**
-     * File d'attente des instructions recues par le serveur
-     */
+
+    // File d'attente des instructions recues par le serveur
     private BlockingQueue<String> inputQueue;
-    /**
-     * Messages d'information du jeu
-     */
+
+    // Messages d'information du jeu
     private List<String> log;
 
+    //////Initialisation du jeu//////
     public Jeu(String[] nomJoueurs) {
         /*
          * ATTENTION : Cette méthode est à réécrire.
@@ -63,17 +52,17 @@ public class Jeu implements Runnable {
          * correctement initialisés.
          */
 
-        // initialisation des entrées/sorties
+        // Initialisation des entrées/sorties
         inputQueue = new LinkedBlockingQueue<>();
         log = new ArrayList<>();
 
-        // création des cartes
+        // Création des cartes
         pileCartesWagon = new ArrayList<>();
         cartesWagonVisibles = new ArrayList<>();
         defausseCartesWagon = new ArrayList<>();
         pileDestinations = new ArrayList<>();
 
-        // création des joueurs
+        // Création des joueurs
         ArrayList<Joueur.Couleur> couleurs = new ArrayList<>(Arrays.asList(Joueur.Couleur.values()));
         Collections.shuffle(couleurs);
         joueurs = new ArrayList<>();
@@ -83,12 +72,13 @@ public class Jeu implements Runnable {
         }
         joueurCourant = joueurs.get(0);
 
-        // création des villes et des routes
+        // Création des villes et des routes
         Plateau plateau = Plateau.makePlateauEurope();
         villes = plateau.getVilles();
         routes = plateau.getRoutes();
     }
 
+    //Getters
     public List<CouleurWagon> getPileCartesWagon() {
         return pileCartesWagon;
     }
@@ -109,9 +99,7 @@ public class Jeu implements Runnable {
         return joueurCourant;
     }
 
-    /**
-     * Exécute la partie
-     */
+    //////Exécute la partie//////
     public void run() {
         /*
          * ATTENTION : Cette méthode est à réécrire.
@@ -136,16 +124,15 @@ public class Jeu implements Runnable {
         
         // Exemple d'utilisation
         while (true) {
-            // le joueur doit choisir une valeur parmi "1", "2", "3", "4", "6" ou "8"
-            // les choix possibles sont présentés sous forme de boutons cliquables
+            // Le joueur doit choisir une valeur parmi "1", "2", "3", "4", "6" ou "8"
+            // Les choix possibles sont présentés sous forme de boutons cliquables
             String choix = joueurCourant.choisir(
                     "Choisissez une taille de route.", // instruction
                     new ArrayList<>(), // choix (hors boutons, ici aucun)
                     new ArrayList<>(Arrays.asList("1", "2", "3", "4", "6", "8")), // boutons
                     false); // le joueur ne peut pas passer (il doit faire un choix)
 
-            // une fois la longueur choisie, on filtre les routes pour ne garder que les
-            // routes de la longueur choisie
+            // Une fois la longueur choisie, on filtre les routes pour ne garder que les routes de la longueur choisie
             int longueurRoute = Integer.parseInt(choix);
             ArrayList<String> routesPossibles = new ArrayList<>();
             for (Route route : routes) {
@@ -154,66 +141,56 @@ public class Jeu implements Runnable {
                 }
             }
 
-            // le joueur doit maintenant choisir une route de la longueur choisie (les
+            // Le joueur doit maintenant choisir une route de la longueur choisie (les
             // autres ne sont pas acceptées). Le joueur peut choisir de passer (aucun choix)
             String choixRoute = joueurCourant.choisir(
                     "Choisissez une route de longueur " + longueurRoute, // instruction
-                    routesPossibles, // choix (pas des boutons, il faut cliquer sur la carte)
-                    new ArrayList<>(), // boutons (ici aucun bouton créé)
-                    true); // le joueur peut passer sans faire de choix
+                    routesPossibles, // Choix (pas des boutons, il faut cliquer sur la carte)
+                    new ArrayList<>(), // Boutons (ici aucun bouton créé)
+                    true); // Le joueur peut passer sans faire de choix
             if (choixRoute.equals("")) {
-                // le joueur n'a pas fait de choix (cliqué sur le bouton "passer")
-                log("Auncune route n'a été choisie");
+                // Le joueur n'a pas fait de choix (cliqué sur le bouton "passer")
+                log("Aucune route n'a été choisie");
             } else {
-                // le joueur a choisi une route
+                // Le joueur a choisi une route
                 log("Vous avez choisi la route " + choixRoute);
             }
         }
     }
 
-    /**
-     * Ajoute une carte dans la pile de défausse.
-     * Dans le cas peu probable, où il y a moins de 5 cartes wagon face visibles
-     * (parce que la pioche
-     * et la défausse sont vides), alors il faut immédiatement rendre cette carte
-     * face visible.
-     *
-     * @param c carte à défausser
-     */
+    // Ajoute une carte dans la pile de défausse.
+    // Dans le cas peu probable, où il y a moins de 5 cartes wagon face visibles
+    // (parce que la pioche et la défausse sont vides), alors il faut immédiatement rendre cette carte face visible.
+
+    //@param c carte à défausser
     public void defausserCarteWagon(CouleurWagon c) {
         throw new RuntimeException("Méthode non implémentée !");
     }
 
-    /**
-     * Pioche une carte de la pile de pioche
-     * Si la pile est vide, les cartes de la défausse sont replacées dans la pioche
-     * puis mélangées avant de piocher une carte
-     *
-     * @return la carte qui a été piochée (ou null si aucune carte disponible)
-     */
+    // Pioche une carte de la pile de pioche
+    // Si la pile est vide, les cartes de la défausse sont replacées dans la pioche
+    // puis mélangées avant de piocher une carte
+
+    //@return la carte qui a été piochée (ou null si aucune carte disponible)
     public CouleurWagon piocherCarteWagon() {
         throw new RuntimeException("Méthode non implémentée !");
     }
 
-    /**
-     * Retire une carte wagon de la pile des cartes wagon visibles.
-     * Si une carte a été retirée, la pile de cartes wagons visibles est recomplétée
-     * (remise à 5, éventuellement remélangée si 3 locomotives visibles)
-     */
+     // Retire une carte wagon de la pile des cartes wagon visibles.
+     // Si une carte a été retirée, la pile de cartes wagons visibles est recomplétée
+     // (remise à 5, éventuellement remélangée si 3 locomotives visibles)
     public void retirerCarteWagonVisible(CouleurWagon c) {
         throw new RuntimeException("Méthode non implémentée !");
     }
 
-    /**
-     * Pioche et renvoie la destination du dessus de la pile de destinations.
-     * 
-     * @return la destination qui a été piochée (ou `null` si aucune destination
-     *         disponible)
-     */
+    // Pioche et renvoie la destination du dessus de la pile de destinations.
+
+    //@return la destination qui a été piochée (ou `null` si aucune destination disponible)
     public Destination piocherDestination() {
         throw new RuntimeException("Méthode non implémentée !");
     }
 
+    //Getter
     public List<Joueur> getJoueurs() {
         return joueurs;
     }
@@ -227,28 +204,21 @@ public class Jeu implements Runnable {
         return joiner.toString();
     }
 
-    /**
-     * Ajoute un message au log du jeu
-     */
+    // Ajoute un message au log du jeu
     public void log(String message) {
         log.add(message);
     }
 
-    /**
-     * Ajoute un message à la file d'entrées
-     */
+    // Ajoute un message à la file d'entrées
     public void addInput(String message) {
         inputQueue.add(message);
     }
 
-    /**
-     * Lit une ligne de l'entrée standard
-     * C'est cette méthode qui doit être appelée à chaque fois qu'on veut lire
-     * l'entrée clavier de l'utilisateur (par exemple dans {@code Player.choisir})
-     *
-     * @return une chaîne de caractères correspondant à l'entrée suivante dans la
-     *         file
-     */
+    // Lit une ligne de l'entrée standard
+    // C'est cette méthode qui doit être appelée à chaque fois qu'on veut lire
+    // l'entrée clavier de l'utilisateur (par exemple dans {@code Player.choisir})
+
+    // @return une chaîne de caractères correspondant à l'entrée suivante dans la file
     public String lireLigne() {
         try {
             return inputQueue.take();
@@ -258,13 +228,11 @@ public class Jeu implements Runnable {
         }
     }
 
-    /**
-     * Envoie l'état de la partie pour affichage aux joueurs avant de faire un choix
-     *
-     * @param instruction l'instruction qui est donnée au joueur
-     * @param boutons     labels des choix proposés s'il y en a
-     * @param peutPasser  indique si le joueur peut passer sans faire de choix
-     */
+    // Envoie l'état de la partie pour affichage aux joueurs avant de faire un choix
+
+    // @param instruction l'instruction qui est donnée au joueur
+    // @param boutons labels des choix proposés s'il y en a
+    // @param peutPasser indique si le joueur peut passer sans faire de choix
     public void prompt(String instruction, Collection<String> boutons, boolean peutPasser) {
         System.out.println();
         System.out.println(this);

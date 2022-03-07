@@ -5,51 +5,39 @@ import java.util.stream.Collectors;
 
 public class Joueur {
 
-    /**
-     * Les couleurs possibles pour les joueurs (pour l'interface graphique)
-     */
+    // Les couleurs possibles pour les joueurs (pour l'interface graphique)
     public static enum Couleur {
         JAUNE, ROUGE, BLEU, VERT, ROSE;
     }
 
-    /**
-     * Jeu auquel le joueur est rattaché
-     */
+    // Jeu auquel le joueur est rattaché
     private Jeu jeu;
-    /**
-     * Nom du joueur
-     */
+
+    // Nom du joueur
     private String nom;
-    /**
-     * CouleurWagon du joueur (pour représentation sur le plateau)
-     */
+
+    // CouleurWagon du joueur (pour représentation sur le plateau)
     private Couleur couleur;
-    /**
-     * Nombre de gares que le joueur peut encore poser sur le plateau
-     */
+
+    // Nombre de gares que le joueur peut encore poser sur le plateau
     private int nbGares;
-    /**
-     * Nombre de wagons que le joueur peut encore poser sur le plateau
-     */
+
+    // Nombre de wagons que le joueur peut encore poser sur le plateau
     private int nbWagons;
-    /**
-     * Liste des missions à réaliser pendant la partie
-     */
+
+    // Liste des missions à réaliser pendant la partie
     private List<Destination> destinations;
-    /**
-     * Liste des cartes que le joueur a en main
-     */
+
+    // Liste des cartes que le joueur a en main
     private List<CouleurWagon> cartesWagon;
-    /**
-     * Liste temporaire de cartes wagon que le joueur est en train de jouer pour
-     * payer la capture d'une route ou la construction d'une gare
-     */
+
+    // Liste temporaire de cartes wagon que le joueur est en train de jouer pour payer la capture d'une route ou la construction d'une gare
     private List<CouleurWagon> cartesWagonPosees;
-    /**
-     * Score courant du joueur (somme des valeurs des routes capturées)
-     */
+
+    // Score courant du joueur (somme des valeurs des routes capturées)
     private int score;
 
+    //////Initialisation d'un joueur//////
     public Joueur(String nom, Jeu jeu, Joueur.Couleur couleur) {
         this.nom = nom;
         this.jeu = jeu;
@@ -59,9 +47,10 @@ public class Joueur {
         cartesWagon = new ArrayList<>();
         cartesWagonPosees = new ArrayList<>();
         destinations = new ArrayList<>();
-        score = 12; // chaque gare non utilisée vaut 4 points
+        score = 12; // Chaque gare non utilisée vaut 4 points
     }
 
+    //Getters
     public String getNom() {
         return nom;
     }
@@ -140,7 +129,7 @@ public class Joueur {
      */
     public String choisir(String instruction, Collection<String> choix, Collection<String> boutons,
                           boolean peutPasser) {
-        // on retire les doublons de la liste des choix
+        // On retire les doublons de la liste des choix
         HashSet<String> choixDistincts = new HashSet<>();
         choixDistincts.addAll(choix);
         choixDistincts.addAll(boutons);
@@ -158,7 +147,7 @@ public class Joueur {
                 while (true) {
                     jeu.prompt(instruction, boutons, peutPasser);
                     entree = jeu.lireLigne();
-                    // si une réponse valide est obtenue, elle est renvoyée
+                    // Si une réponse valide est obtenue, elle est renvoyée
                     if (choixDistincts.contains(entree) || (peutPasser && entree.equals("")))
                         return entree;
                 }
@@ -166,12 +155,9 @@ public class Joueur {
         }
     }
 
-    /**
-     * Affiche un message dans le log du jeu (visible sur l'interface graphique)
-     *
-     * @param message le message à afficher (peut contenir des balises html pour la
-     *                mise en forme)
-     */
+    // Affiche un message dans le log du jeu (visible sur l'interface graphique)
+
+    // @param message le message à afficher (peut contenir des balises html pour la mise en forme)
     public void log(String message) {
         jeu.log(message);
     }
@@ -187,18 +173,12 @@ public class Joueur {
         return joiner.toString();
     }
 
-    /**
-     * @return une chaîne de caractères contenant le nom du joueur, avec des balises
-     * HTML pour être mis en forme dans le log
-     */
+    // @return une chaîne de caractères contenant le nom du joueur, avec des balises HTML pour être mis en forme dans le log
     public String toLog() {
         return String.format("<span class=\"joueur\">%s</span>", nom);
     }
 
-    /**
-     * Renvoie une représentation du joueur sous la forme d'un objet Java simple
-     * (POJO)
-     */
+    // Renvoie une représentation du joueur sous la forme d'un objet Java simple (POJO)
     public Object asPOJO() {
         HashMap<String, Object> data = new HashMap<>();
         data.put("nom", nom);

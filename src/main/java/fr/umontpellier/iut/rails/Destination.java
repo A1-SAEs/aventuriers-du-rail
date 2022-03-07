@@ -4,19 +4,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Destination {
-    /**
-     * Ville de départ
-     */
+
+    // Ville de départ
     private String ville1;
-    /**
-     * Ville d'arrivée
-     */
+
+    // Ville d'arrivée
     private String ville2;
-    /**
-     * Nombre de points que vaut la destination
-     */
+
+    // Nombre de points que vaut la destination
     private int valeur;
 
+    //////Initialisation d'une destination//////
     public Destination(String ville1, String ville2, int valeur) {
         this.ville1 = ville1;
         this.ville2 = ville2;
@@ -29,6 +27,7 @@ public class Destination {
         return getNom();
     }
 
+    //Getter
     public String getNom() {
         return String.format("%s - %s (%d)", ville1, ville2, valeur);
     }
@@ -41,9 +40,7 @@ public class Destination {
         return data;
     }
 
-    /**
-     * @return une liste contenant toutes les destinations "normales" du jeu
-     */
+    // @return une liste contenant toutes les destinations "normales" du jeu
     public static ArrayList<Destination> makeDestinationsEurope() {
         ArrayList<Destination> destinations = new ArrayList<>();
         destinations.add(new Destination("Athina", "Angora", 5));
@@ -89,9 +86,7 @@ public class Destination {
         return destinations;
     }
 
-    /**
-     * @return une liste contenant toutes les destinations "longues" du jeu
-     */
+    // @return une liste contenant toutes les destinations "longues" du jeu
     public static ArrayList<Destination> makeDestinationsLonguesEurope() {
         ArrayList<Destination> destinations = new ArrayList<>();
         destinations.add(new Destination("Lisboa", "Danzic", 20));

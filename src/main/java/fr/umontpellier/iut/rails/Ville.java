@@ -3,19 +3,19 @@ package fr.umontpellier.iut.rails;
 import java.util.HashMap;
 
 public class Ville {
-    /**
-     * Nom complet de la ville
-     */
+
+    // Nom complet de la ville
     private String nom;
-    /**
-     * Joueur qui a construit une gare sur la ville (ou `null` si pas de gare)
-     */
+
+    // Joueur qui a construit une gare sur la ville (ou `null` si pas de gare)
     private Joueur proprietaire;
 
+    //////Initialisation d'une ville//////
     public Ville(String nom) {
         this.nom = nom;
     }
 
+    //Getters & Setters
     public String getNom() {
         return nom;
     }

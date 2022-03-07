@@ -6,20 +6,20 @@ import java.util.List;
 import java.util.Map;
 
 public class Plateau {
-    /**
-     * Liste des villes
-     */
+
+    // Liste des villes
     private final List<Ville> villes;
-    /**
-     * Liste des routes
-     */
+
+    // Liste des routes
     private final List<Route> routes;
 
+    //////Initialisation du plateau//////
     public Plateau(List<Ville> villes, List<Route> routes) {
         this.villes = villes;
         this.routes = routes;
     }
 
+    //Getters
     public List<Ville> getVilles() {
         return villes;
     }
@@ -28,6 +28,7 @@ public class Plateau {
         return routes;
     }
 
+    //Creation du plateau
     static public Plateau makePlateauEurope() {
         Map<String, Ville> villes = new HashMap<>();
         villes.put("amsterdam", new Ville("Amsterdam"));
