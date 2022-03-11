@@ -163,8 +163,14 @@ public class Jeu implements Runnable {
     // (parce que la pioche et la défausse sont vides), alors il faut immédiatement rendre cette carte face visible.
 
     //@param c carte à défausser
+    /**     by lolo     **/
     public void defausserCarteWagon(CouleurWagon c) {
-        throw new RuntimeException("Méthode non implémentée !");
+        if (pileCartesWagon.isEmpty() && defausseCartesWagon.isEmpty() && cartesWagonVisibles.size() < 5){
+            cartesWagonVisibles.add(c);
+        }
+        else{
+            defausseCartesWagon.add(c);
+        }
     }
 
     // Pioche une carte de la pile de pioche
@@ -172,22 +178,49 @@ public class Jeu implements Runnable {
     // puis mélangées avant de piocher une carte
 
     //@return la carte qui a été piochée (ou null si aucune carte disponible)
+    /**     by lolo     **/
     public CouleurWagon piocherCarteWagon() {
-        throw new RuntimeException("Méthode non implémentée !");
+        CouleurWagon cartePioché = null;
+        if (pileCartesWagon.isEmpty()){
+            cartePioché = null;
+        }
+        else{
+            cartePioché = pileCartesWagon.remove(0);
+        }
+        return cartePioché;
     }
 
      // Retire une carte wagon de la pile des cartes wagon visibles.
      // Si une carte a été retirée, la pile de cartes wagons visibles est recomplétée
      // (remise à 5, éventuellement remélangée si 3 locomotives visibles)
+    /**     by lolo     **/
     public void retirerCarteWagonVisible(CouleurWagon c) {
-        throw new RuntimeException("Méthode non implémentée !");
+        cartesWagonVisibles.remove(c);
+        cartesWagonVisibles.add(piocherCarteWagon());
+        ArrayList<CouleurWagon> tripleLocomotive = new ArrayList<>();
+        tripleLocomotive.add(CouleurWagon.LOCOMOTIVE);
+        tripleLocomotive.add(CouleurWagon.LOCOMOTIVE);
+        tripleLocomotive.add(CouleurWagon.LOCOMOTIVE);
+        if (cartesWagonVisibles.containsAll(tripleLocomotive)){
+            pileCartesWagon.addAll(cartesWagonVisibles);
+            cartesWagonVisibles.removeAll(cartesWagonVisibles);
+            for(int i = 0; i<4;i++){
+                cartesWagonVisibles.add(pileCartesWagon.get(0));
+                pileCartesWagon.remove(0);
+            }
+        }
     }
 
     // Pioche et renvoie la destination du dessus de la pile de destinations.
 
     //@return la destination qui a été piochée (ou `null` si aucune destination disponible)
+    /**     by lolo     **/
     public Destination piocherDestination() {
-        throw new RuntimeException("Méthode non implémentée !");
+        Destination destinationPioche = null;
+        if(!pileDestinations.isEmpty()){
+            destinationPioche=pileDestinations.get(0);
+        }
+        return destinationPioche;
     }
 
     //Getter
