@@ -180,17 +180,18 @@ public class Jeu implements Runnable {
     //@return la carte qui a été piochée (ou null si aucune carte disponible)
     /**     by lolo     **/
     public CouleurWagon piocherCarteWagon() {
-        CouleurWagon cartePiochee = null;
-        if (pileCartesWagon.isEmpty()){
-            if(defausseCartesWagon.isEmpty()){
-                return cartePiochee;
+        CouleurWagon cartePiochee = null; //Pas encore de carte piochée
+        if (pileCartesWagon.isEmpty()){ //Si la pile de cartes est vide
+            if(defausseCartesWagon.isEmpty()){ //Si la défausse est aussi vide
+                return cartePiochee; //On ne pioche pas
             }
-            pileCartesWagon=defausseCartesWagon;
-            Collections.shuffle(pileCartesWagon);
-            defausseCartesWagon=null;
+            //Si la pile est vide mais pas la défausse
+            pileCartesWagon = defausseCartesWagon; //La défausse devient la pile
+            Collections.shuffle(pileCartesWagon); //On mélange la nouvelle pile
+            defausseCartesWagon.clear(); //On vide la défausse
         }
-        cartePiochee = pileCartesWagon.remove(0);
-        return cartePiochee;
+        cartePiochee = pileCartesWagon.remove(0); //On pioche une carte
+        return cartePiochee; //On la retourne
     }
 
      // Retire une carte wagon de la pile des cartes wagon visibles.
@@ -198,17 +199,18 @@ public class Jeu implements Runnable {
      // (remise à 5, éventuellement remélangée si 3 locomotives visibles)
     /**     by lolo     **/
     public void retirerCarteWagonVisible(CouleurWagon c) {
-        if (!cartesWagonVisibles.isEmpty()){
-            cartesWagonVisibles.remove(c);
-            cartesWagonVisibles.add(piocherCarteWagon());
-            ArrayList<CouleurWagon> tripleLocomotive = new ArrayList<>();
+        if (!cartesWagonVisibles.isEmpty()){ //S'il y a des cartes dans la pioche visible
+            cartesWagonVisibles.remove(c); //On en prend une
+            cartesWagonVisibles.add(piocherCarteWagon()); //On en remet une (pour en avoir toujours 5)
+
+            ArrayList<CouleurWagon> tripleLocomotive = new ArrayList<>(); //On crée un conteneur pour les 3 locomotives
             tripleLocomotive.add(CouleurWagon.LOCOMOTIVE);
             tripleLocomotive.add(CouleurWagon.LOCOMOTIVE);
             tripleLocomotive.add(CouleurWagon.LOCOMOTIVE);
-            if (cartesWagonVisibles.containsAll(tripleLocomotive)){
-                pileCartesWagon.addAll(cartesWagonVisibles);
-                cartesWagonVisibles.removeAll(cartesWagonVisibles);
-                for(int i = 0; i<4;i++){
+            if (cartesWagonVisibles.containsAll(tripleLocomotive)){ //S'il y a 3 locomotives dans la pioche visible
+                defausseCartesWagon.addAll(cartesWagonVisibles); //On met toute la pioche visible dans la défausse
+                cartesWagonVisibles.clear(); //On vide la pioche visible
+                for(int i = 0; i<4;i++){ //On rajoute 5 nouvelles cartes dans la pioche visible
                     cartesWagonVisibles.add(pileCartesWagon.get(0));
                     pileCartesWagon.remove(0);
                 }
