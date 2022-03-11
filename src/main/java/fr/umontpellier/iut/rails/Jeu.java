@@ -182,11 +182,14 @@ public class Jeu implements Runnable {
     public CouleurWagon piocherCarteWagon() {
         CouleurWagon cartePioché = null;
         if (pileCartesWagon.isEmpty()){
-            cartePioché = null;
+            if(defausseCartesWagon.isEmpty()){
+                return cartePioché;
+            }
+            pileCartesWagon=defausseCartesWagon;
+            Collections.shuffle(pileCartesWagon);
+            defausseCartesWagon=null;
         }
-        else{
-            cartePioché = pileCartesWagon.remove(0);
-        }
+        cartePioché = pileCartesWagon.remove(0);
         return cartePioché;
     }
 

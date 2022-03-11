@@ -5,8 +5,13 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class JeuTest {
+
+
+
     @Test
-    public void test_defausser_carte_wagon_(){
-        
+    public void test_defausser_carte_wagon_ajouter_carte_dans_defausse(){
+
     }
+
+
 }
