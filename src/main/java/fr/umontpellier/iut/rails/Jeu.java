@@ -180,17 +180,17 @@ public class Jeu implements Runnable {
     //@return la carte qui a été piochée (ou null si aucune carte disponible)
     /**     by lolo     **/
     public CouleurWagon piocherCarteWagon() {
-        CouleurWagon cartePioché = null;
+        CouleurWagon cartePiochee = null;
         if (pileCartesWagon.isEmpty()){
             if(defausseCartesWagon.isEmpty()){
-                return cartePioché;
+                return cartePiochee;
             }
             pileCartesWagon=defausseCartesWagon;
             Collections.shuffle(pileCartesWagon);
             defausseCartesWagon=null;
         }
-        cartePioché = pileCartesWagon.remove(0);
-        return cartePioché;
+        cartePiochee = pileCartesWagon.remove(0);
+        return cartePiochee;
     }
 
      // Retire une carte wagon de la pile des cartes wagon visibles.
@@ -198,20 +198,23 @@ public class Jeu implements Runnable {
      // (remise à 5, éventuellement remélangée si 3 locomotives visibles)
     /**     by lolo     **/
     public void retirerCarteWagonVisible(CouleurWagon c) {
-        cartesWagonVisibles.remove(c);
-        cartesWagonVisibles.add(piocherCarteWagon());
-        ArrayList<CouleurWagon> tripleLocomotive = new ArrayList<>();
-        tripleLocomotive.add(CouleurWagon.LOCOMOTIVE);
-        tripleLocomotive.add(CouleurWagon.LOCOMOTIVE);
-        tripleLocomotive.add(CouleurWagon.LOCOMOTIVE);
-        if (cartesWagonVisibles.containsAll(tripleLocomotive)){
-            pileCartesWagon.addAll(cartesWagonVisibles);
-            cartesWagonVisibles.removeAll(cartesWagonVisibles);
-            for(int i = 0; i<4;i++){
-                cartesWagonVisibles.add(pileCartesWagon.get(0));
-                pileCartesWagon.remove(0);
+        if (!cartesWagonVisibles.isEmpty()){
+            cartesWagonVisibles.remove(c);
+            cartesWagonVisibles.add(piocherCarteWagon());
+            ArrayList<CouleurWagon> tripleLocomotive = new ArrayList<>();
+            tripleLocomotive.add(CouleurWagon.LOCOMOTIVE);
+            tripleLocomotive.add(CouleurWagon.LOCOMOTIVE);
+            tripleLocomotive.add(CouleurWagon.LOCOMOTIVE);
+            if (cartesWagonVisibles.containsAll(tripleLocomotive)){
+                pileCartesWagon.addAll(cartesWagonVisibles);
+                cartesWagonVisibles.removeAll(cartesWagonVisibles);
+                for(int i = 0; i<4;i++){
+                    cartesWagonVisibles.add(pileCartesWagon.get(0));
+                    pileCartesWagon.remove(0);
+                }
             }
         }
+
     }
 
     // Pioche et renvoie la destination du dessus de la pile de destinations.
@@ -222,6 +225,7 @@ public class Jeu implements Runnable {
         Destination destinationPioche = null;
         if(!pileDestinations.isEmpty()){
             destinationPioche=pileDestinations.get(0);
+            pileDestinations.remove(0);
         }
         return destinationPioche;
     }
