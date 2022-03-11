@@ -50,7 +50,7 @@ public class Joueur {
         score = 12; // Chaque gare non utilisée vaut 4 points
     }
 
-    //Getters
+    //Getters & Setters
     public String getNom() {
         return nom;
     }
