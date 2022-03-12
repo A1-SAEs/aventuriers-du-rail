@@ -164,12 +164,12 @@ public class Jeu implements Runnable {
 
     //@param c carte à défausser
     /**     by lolo     **/
-    public void defausserCarteWagon(CouleurWagon c) {
+    public void defausserCarteWagon(CouleurWagon carte) {
         if (pileCartesWagon.isEmpty() && defausseCartesWagon.isEmpty() && cartesWagonVisibles.size() < 5){
-            cartesWagonVisibles.add(c);
+            cartesWagonVisibles.add(carte);
         }
         else{
-            defausseCartesWagon.add(c);
+            defausseCartesWagon.add(carte);
         }
     }
 
@@ -198,9 +198,9 @@ public class Jeu implements Runnable {
      // Si une carte a été retirée, la pile de cartes wagons visibles est recomplétée
      // (remise à 5, éventuellement remélangée si 3 locomotives visibles)
     /**     by lolo     **/
-    public void retirerCarteWagonVisible(CouleurWagon c) {
+    public void retirerCarteWagonVisible(CouleurWagon carte) {
         if (!cartesWagonVisibles.isEmpty()){ //S'il y a des cartes dans la pioche visible
-            cartesWagonVisibles.remove(c); //On en prend une
+            cartesWagonVisibles.remove(carte); //On en prend une
             cartesWagonVisibles.add(piocherCarteWagon()); //On en remet une (pour en avoir toujours 5)
 
             ArrayList<CouleurWagon> tripleLocomotive = new ArrayList<>(); //On crée un conteneur pour les 3 locomotives
@@ -224,12 +224,11 @@ public class Jeu implements Runnable {
     //@return la destination qui a été piochée (ou `null` si aucune destination disponible)
     /**     by lolo     **/
     public Destination piocherDestination() {
-        Destination destinationPioche = null;
-        if(!pileDestinations.isEmpty()){
-            destinationPioche=pileDestinations.get(0);
-            pileDestinations.remove(0);
+        Destination destinationPioche = null; //Pas encore de destination piochée
+        if(!pileDestinations.isEmpty()){ //S'il y a des destinations disponibles
+            destinationPioche = pileDestinations.remove(0); //On pioche la première destination
         }
-        return destinationPioche;
+        return destinationPioche; //On retoune la destination piochée
     }
 
     //Getter
