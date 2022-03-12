@@ -12,9 +12,9 @@ import java.util.List;
 
 class JeuTest {
     Jeu Partie = new Jeu(new String[]{"Lolo","Stella"});
-    List<CouleurWagon> pileCartesWagon= new ArrayList<>();
-    List<CouleurWagon>defausseCarteWagon = new ArrayList<>();
-    List<CouleurWagon>cartesWagonVisibles = new ArrayList<>();
+    List<CouleurWagon> pileCartesWagon = Partie.getPileCartesWagon();
+    List<CouleurWagon> defausseCartesWagon = Partie.getDefausseCartesWagon();
+    List<CouleurWagon> cartesWagonVisibles = Partie.getCartesWagonVisibles();
 
     @BeforeEach
     void setUp() {
@@ -28,27 +28,63 @@ class JeuTest {
         Collections.shuffle(pileCartesWagon);
     }
 
+    /////Defausser cartes wagon/////
+    @Disabled //Fonctionne
     @Test
-    public void test_piocher_carte_wagon_pile_et_defausse_remplies(){
-        System.out.println(pileCartesWagon.toString());
-        System.out.println(defausseCarteWagon.toString());
+    public void test_ajouter_carte_dans_defausse_vide() {
+        Partie.defausserCarteWagon(CouleurWagon.ROUGE);
+        System.out.println(defausseCartesWagon);
+        assertEquals(1, defausseCartesWagon.size());
+    }
+
+    @Disabled //Fonctionne
+    @Test
+    public void test_ajouter_carte_dans_cartes_visibles() {
+        pileCartesWagon.clear();
+        defausseCartesWagon.clear();
+        cartesWagonVisibles.add(CouleurWagon.ROSE);
+        Partie.defausserCarteWagon(CouleurWagon.ROUGE);
+        System.out.println(cartesWagonVisibles);
+        assertEquals(2, cartesWagonVisibles.size());
+    }
+
+    @Disabled //Fonctionne
+    @Test
+    public void test_ne_pas_ajouter_carte_dans_cartes_visibles_car_egale_a_5_malgre_pile_et_defausse_vides() {
+        pileCartesWagon.clear();
+        defausseCartesWagon.clear();
+        for(int i=0;i<5;i++) {
+            cartesWagonVisibles.add(CouleurWagon.ROSE);
+        }
+        Partie.defausserCarteWagon(CouleurWagon.ROUGE);
+        System.out.println(cartesWagonVisibles);
+        System.out.println(defausseCartesWagon);
+        assertEquals(1, defausseCartesWagon.size());
+    }
+
+    /////Piocher carte wagon/////
+    @Disabled //Fonctionne
+    @Test
+    public void test_pile_et_defausse_remplies(){
         Partie.piocherCarteWagon();
-        System.out.println(pileCartesWagon.toString());
-        System.out.println(defausseCarteWagon.toString());
+        System.out.println(pileCartesWagon);
         assertEquals(109, pileCartesWagon.size());
     }
 
+    //Marche pas, à refléchir
     @Test
-    public void test_defausser_carte_wagon_ajouter_carte_dans_defausse_vide(){
-        Partie.defausserCarteWagon(CouleurWagon.ROUGE);
-        assertEquals(1, defausseCarteWagon.size());
+    public void test_pile_vide_et_defausse_remplie(){
     }
 
-    @Disabled
+    @Disabled //Fonctionne
     @Test
-    public void test_defausser_carte_wagon_ajouter_carte_dans_cartes_visibles() {
-
+    public void test_pile_et_defausse_vides(){
+        pileCartesWagon.clear();
+        defausseCartesWagon.clear();
+        assertNull(Partie.piocherCarteWagon());
     }
+
+
 
 
 }
