@@ -6,26 +6,84 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 class JeuTest {
-
-    List<CouleurWagon> pileCarteWagon= new ArrayList<>();
+    Jeu Partie = new Jeu(new String[]{"Lolo", "Stella"});
+    List<CouleurWagon> pileCartesWagon = Partie.getPileCartesWagon();
+    List<CouleurWagon> defausseCartesWagon = Partie.getDefausseCartesWagon();
+    List<CouleurWagon> cartesWagonVisibles = Partie.getCartesWagonVisibles();
 
     @BeforeEach
     void setUp() {
-        for(int i=0;i<14;i++){
-            pileCarteWagon.add(CouleurWagon.LOCOMOTIVE);
+        //Mise en place de la pile : 110 cartes
+        for (int i = 0; i < 14; i++) {
+            pileCartesWagon.add(CouleurWagon.LOCOMOTIVE);
         }
-        for(int i=0;i<12;i++){
-            pileCarteWagon.addAll(CouleurWagon.getCouleursSimples());
+        for (int i = 0; i < 12; i++) {
+            pileCartesWagon.addAll(CouleurWagon.getCouleursSimples());
         }
+        Collections.shuffle(pileCartesWagon);
     }
 
+    /////Defausser cartes wagon/////
+    @Disabled //Fonctionne
     @Test
-    public void test_defausser_carte_wagon_ajouter_carte_dans_defausse(){
-
+    public void test_ajouter_carte_dans_defausse_vide() {
+        Partie.defausserCarteWagon(CouleurWagon.ROUGE);
+        System.out.println(defausseCartesWagon);
+        assertEquals(1, defausseCartesWagon.size());
     }
 
+    @Disabled //Fonctionne
+    @Test
+    public void test_ajouter_carte_dans_cartes_visibles() {
+        pileCartesWagon.clear();
+        defausseCartesWagon.clear();
+        cartesWagonVisibles.add(CouleurWagon.ROSE);
+        Partie.defausserCarteWagon(CouleurWagon.ROUGE);
+        System.out.println(cartesWagonVisibles);
+        assertEquals(2, cartesWagonVisibles.size());
+    }
 
+    @Disabled //Fonctionne
+    @Test
+    public void test_ne_pas_ajouter_carte_dans_cartes_visibles_car_egale_a_5_malgre_pile_et_defausse_vides() {
+        pileCartesWagon.clear();
+        defausseCartesWagon.clear();
+        for (int i = 0; i < 5; i++) {
+            cartesWagonVisibles.add(CouleurWagon.ROSE);
+        }
+        Partie.defausserCarteWagon(CouleurWagon.ROUGE);
+        System.out.println(cartesWagonVisibles);
+        System.out.println(defausseCartesWagon);
+        assertEquals(1, defausseCartesWagon.size());
+    }
+
+    /////Piocher carte wagon/////
+    @Disabled //Fonctionne
+    @Test
+    public void test_pile_et_defausse_remplies() {
+        Partie.piocherCarteWagon();
+        System.out.println(pileCartesWagon);
+        assertEquals(109, pileCartesWagon.size());
+    }
+
+    @Disabled //Fonctionne
+    @Test
+    public void test_pile_vide_et_defausse_remplie() {
+        defausseCartesWagon.addAll(pileCartesWagon);
+        pileCartesWagon.clear();
+        Partie.piocherCarteWagon();
+        assertEquals(109,pileCartesWagon.size());
+    }
+
+    @Disabled //Fonctionne
+    @Test
+    public void test_pile_et_defausse_vides() {
+        pileCartesWagon.clear();
+        defausseCartesWagon.clear();
+        assertNull(Partie.piocherCarteWagon());
+    }
 }

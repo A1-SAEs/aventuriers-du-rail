@@ -99,6 +99,10 @@ public class Jeu implements Runnable {
         return joueurCourant;
     }
 
+    public List<CouleurWagon> getDefausseCartesWagon(){
+        return defausseCartesWagon;
+    }
+
     //////Exécute la partie//////
     public void run() {
         /*
@@ -186,7 +190,7 @@ public class Jeu implements Runnable {
                 return cartePiochee; //On ne pioche pas
             }
             //Si la pile est vide mais pas la défausse
-            pileCartesWagon = defausseCartesWagon; //La défausse devient la pile
+            pileCartesWagon.addAll(defausseCartesWagon); //La défausse devient la pile
             Collections.shuffle(pileCartesWagon); //On mélange la nouvelle pile
             defausseCartesWagon.clear(); //On vide la défausse
         }
