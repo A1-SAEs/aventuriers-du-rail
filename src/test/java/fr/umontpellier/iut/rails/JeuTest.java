@@ -5,13 +5,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 class JeuTest {
-    Jeu Partie = new Jeu(new String[]{"Lolo","Stella"});
+    Jeu Partie = new Jeu(new String[]{"Lolo", "Stella"});
     List<CouleurWagon> pileCartesWagon = Partie.getPileCartesWagon();
     List<CouleurWagon> defausseCartesWagon = Partie.getDefausseCartesWagon();
     List<CouleurWagon> cartesWagonVisibles = Partie.getCartesWagonVisibles();
@@ -19,10 +18,10 @@ class JeuTest {
     @BeforeEach
     void setUp() {
         //Mise en place de la pile : 110 cartes
-        for(int i=0;i<14;i++){
+        for (int i = 0; i < 14; i++) {
             pileCartesWagon.add(CouleurWagon.LOCOMOTIVE);
         }
-        for(int i=0;i<12;i++){
+        for (int i = 0; i < 12; i++) {
             pileCartesWagon.addAll(CouleurWagon.getCouleursSimples());
         }
         Collections.shuffle(pileCartesWagon);
@@ -53,7 +52,7 @@ class JeuTest {
     public void test_ne_pas_ajouter_carte_dans_cartes_visibles_car_egale_a_5_malgre_pile_et_defausse_vides() {
         pileCartesWagon.clear();
         defausseCartesWagon.clear();
-        for(int i=0;i<5;i++) {
+        for (int i = 0; i < 5; i++) {
             cartesWagonVisibles.add(CouleurWagon.ROSE);
         }
         Partie.defausserCarteWagon(CouleurWagon.ROUGE);
@@ -65,26 +64,26 @@ class JeuTest {
     /////Piocher carte wagon/////
     @Disabled //Fonctionne
     @Test
-    public void test_pile_et_defausse_remplies(){
+    public void test_pile_et_defausse_remplies() {
         Partie.piocherCarteWagon();
         System.out.println(pileCartesWagon);
         assertEquals(109, pileCartesWagon.size());
     }
 
-    //Marche pas, à refléchir
+    @Disabled //Fonctionne
     @Test
-    public void test_pile_vide_et_defausse_remplie(){
+    public void test_pile_vide_et_defausse_remplie() {
+        defausseCartesWagon.addAll(pileCartesWagon);
+        pileCartesWagon.clear();
+        Partie.piocherCarteWagon();
+        assertEquals(109,pileCartesWagon.size());
     }
 
     @Disabled //Fonctionne
     @Test
-    public void test_pile_et_defausse_vides(){
+    public void test_pile_et_defausse_vides() {
         pileCartesWagon.clear();
         defausseCartesWagon.clear();
         assertNull(Partie.piocherCarteWagon());
     }
-
-
-
-
 }
