@@ -103,6 +103,10 @@ public class Jeu implements Runnable {
         return defausseCartesWagon;
     }
 
+    public List<Destination> getPileDestinations() {
+        return pileDestinations;
+    }
+
     //////Exécute la partie//////
     public void run() {
         /*
@@ -214,9 +218,8 @@ public class Jeu implements Runnable {
             if (cartesWagonVisibles.containsAll(tripleLocomotive)){ //S'il y a 3 locomotives dans la pioche visible
                 defausseCartesWagon.addAll(cartesWagonVisibles); //On met toute la pioche visible dans la défausse
                 cartesWagonVisibles.clear(); //On vide la pioche visible
-                for(int i = 0; i<4;i++){ //On rajoute 5 nouvelles cartes dans la pioche visible
-                    cartesWagonVisibles.add(pileCartesWagon.get(0));
-                    pileCartesWagon.remove(0);
+                for(int i = 0; i<5;i++){ //On rajoute 5 nouvelles cartes dans la pioche visible
+                    cartesWagonVisibles.add(piocherCarteWagon());
                 }
             }
         }
@@ -230,8 +233,8 @@ public class Jeu implements Runnable {
     public Destination piocherDestination() {
         Destination destinationPioche = null;
         if(!pileDestinations.isEmpty()){
-            destinationPioche=pileDestinations.get(0);
-            pileDestinations.remove(0);
+            destinationPioche = pileDestinations.remove(0);
+            ;
         }
         return destinationPioche;
     }
