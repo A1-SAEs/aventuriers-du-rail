@@ -3,6 +3,7 @@ package fr.umontpellier.iut.rails;
 import com.google.gson.Gson;
 import fr.umontpellier.iut.gui.GameServer;
 
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -43,14 +44,6 @@ public class Jeu implements Runnable {
 
     //////Initialisation du jeu//////
     public Jeu(String[] nomJoueurs) {
-        /*
-         * ATTENTION : Cette méthode est à réécrire.
-         * 
-         * Le code indiqué ici est un squelette minimum pour que le jeu se lance et que
-         * l'interface graphique fonctionne.
-         * Vous devez modifier ce code pour que les différents éléments du jeu soient
-         * correctement initialisés.
-         */
 
         // Initialisation des entrées/sorties
         inputQueue = new LinkedBlockingQueue<>();
@@ -61,6 +54,7 @@ public class Jeu implements Runnable {
         cartesWagonVisibles = new ArrayList<>();
         defausseCartesWagon = new ArrayList<>();
         pileDestinations = new ArrayList<>();
+        List<Destination> destinationsLongues = Destination.makeDestinationsLonguesEurope();
 
         // Création des joueurs
         ArrayList<Joueur.Couleur> couleurs = new ArrayList<>(Arrays.asList(Joueur.Couleur.values()));
@@ -76,6 +70,45 @@ public class Jeu implements Runnable {
         Plateau plateau = Plateau.makePlateauEurope();
         villes = plateau.getVilles();
         routes = plateau.getRoutes();
+
+        //Initialisation des cartes
+        //Cartes wagons : 110 cartes, 12*8 couleurs et 14 locomotives
+        for (int i = 0; i < 12; i++) {
+            pileCartesWagon.addAll(CouleurWagon.getCouleursSimples());
+        }
+        for (int i = 0; i < 14; i++) {
+            pileCartesWagon.add(CouleurWagon.LOCOMOTIVE);
+        }
+        Collections.shuffle(pileCartesWagon);
+
+        //Cartes destinations : 46 cartes, 40 normales, 6 longues
+        pileDestinations.addAll(Destination.makeDestinationsEurope());
+        Collections.shuffle(pileDestinations);
+
+        //Distribution des cartes wagons aux joueurs
+        for(Joueur joueur : joueurs){
+            for(int i=0; i<4; i++){
+                joueur.setCartesWagon(piocherCarteWagon());
+            }
+        }
+
+        //Mise en place de la pile visible
+        for(int i=0; i<5; i++){
+            cartesWagonVisibles.add(piocherCarteWagon());
+        }
+
+        //Distribution des cartes destination
+        //1 carte longue par joueur
+        for(Joueur joueur : joueurs) {
+            Collections.shuffle(destinationsLongues);
+            joueur.setDestinations(destinationsLongues.remove(0));
+        }
+        //3 cartes normales par joueur
+        for(Joueur joueur : joueurs) {
+            for(int i=0; i<3; i++){
+                joueur.setDestinations(piocherDestination());
+            }
+        }
     }
 
     //Getters

@@ -31,7 +31,6 @@ class JeuTest {
 
         //Mise en place de la pile des destinations : 46 cartes
         pileDestinations.addAll(Destination.makeDestinationsEurope());
-        pileDestinations.addAll(Destination.makeDestinationsLonguesEurope());
     }
 
     /////defausserCarteWagon/////

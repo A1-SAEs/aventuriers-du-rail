@@ -79,6 +79,14 @@ public class Joueur {
         return destinations;
     }
 
+    public void setCartesWagon(CouleurWagon carteWagon) {
+        this.cartesWagon.add(carteWagon);
+    }
+
+    public void setDestinations(Destination carteDestination) {
+        this.destinations.add(carteDestination);
+    }
+
     /**
      * Attend une entrée de la part du joueur (au clavier ou sur la websocket) et
      * renvoie le choix du joueur.
