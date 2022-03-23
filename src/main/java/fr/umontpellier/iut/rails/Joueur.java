@@ -221,7 +221,11 @@ public class Joueur {
      * @return liste des destinations qui n'ont pas été gardées par le joueur
      */
     public List<Destination> choisirDestinations(List<Destination> destinationsPossibles, int n) {
-        throw new RuntimeException("Méthode non implémentée !");
+        /*List<Destination> destinationsNonChoisies = new ArrayList<>();
+        while(destinationsPossibles.size()>n){
+
+        }*/
+        return destinationsPossibles;
     }
 
     /**
@@ -244,6 +248,17 @@ public class Joueur {
      * "construire une gare", "choisir les destinations à défausser", etc.)
      */
     public void jouerTour() {
-        throw new RuntimeException("Méthode non implémentée !");
+        List<CouleurWagon> cartesWagonVisibles = jeu.getCartesWagonVisibles(); //Récupération des cartes wagons visibles
+        List<Ville> listeVilles = jeu.getVilles();
+        List<Route> listeRoutes = jeu.getRoutes();
+        ArrayList<String> choix = new ArrayList<>(); //Création d'une liste de string
+        for(CouleurWagon carte : cartesWagonVisibles){
+            choix.add(carte.name()); //Ajout de toutes les cartes wagons visibles à la liste
+        }
+        choix.add("GRIS"); //Ajout de la pioche de cartes wagon
+        choix.add("destinations"); //Ajout de la pioche de destinations
+        choix.add(""); //Ajout de l'option passer
+        String choixTour = this.choisir("Que voulez-vous faire à ce tour ?", choix, new ArrayList<>(),true);
+        System.out.println(choixTour);
     }
 }

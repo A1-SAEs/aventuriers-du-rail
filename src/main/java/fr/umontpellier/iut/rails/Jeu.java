@@ -124,9 +124,7 @@ public class Jeu implements Runnable {
         return villes;
     }
 
-    public List<Route> getRoutes() {
-        return routes;
-    }
+    public List<Route> getRoutes() { return routes; }
 
     public Joueur getJoueurCourant() {
         return joueurCourant;
@@ -141,30 +139,23 @@ public class Jeu implements Runnable {
     }
 
     //////Exécute la partie//////
+    /* Cette méthode doit :
+     * - faire choisir à chaque joueur les destinations initiales qu'il souhaite
+     * garder : on pioche 3 destinations "courtes" et 1 destination "longue", puis
+     * le
+     * joueur peut choisir des destinations à défausser ou passer s'il ne veut plus
+     * en défausser. Il doit en garder au moins 2.
+     * - exécuter la boucle principale du jeu qui fait jouer le tour de chaque
+     * joueur à tour de rôle jusqu'à ce qu'un des joueurs n'ait plus que 2 wagons ou
+     * moins
+     * - exécuter encore un dernier tour de jeu pour chaque joueur après
+     */
     public void run() {
-        /*
-         * ATTENTION : Cette méthode est à réécrire.
-         * 
-         * Cette méthode doit :
-         * - faire choisir à chaque joueur les destinations initiales qu'il souhaite
-         * garder : on pioche 3 destinations "courtes" et 1 destination "longue", puis
-         * le
-         * joueur peut choisir des destinations à défausser ou passer s'il ne veut plus
-         * en défausser. Il doit en garder au moins 2.
-         * - exécuter la boucle principale du jeu qui fait jouer le tour de chaque
-         * joueur à tour de rôle jusqu'à ce qu'un des joueurs n'ait plus que 2 wagons ou
-         * moins
-         * - exécuter encore un dernier tour de jeu pour chaque joueur après
-         */
+        boolean finDePartie = false;
 
-        /**
-         * Le code proposé ici n'est qu'un exemple d'utilisation des méthodes pour
-         * interagir avec l'utilisateur, il n'a rien à voir avec le code de la partie et
-         * doit donc être entièrement réécrit.
-         */
-        
-        // Exemple d'utilisation
-        while (true) {
+        while (!finDePartie) { // Tant que la partie est pas finie
+
+            joueurCourant.jouerTour();
             // Le joueur doit choisir une valeur parmi "1", "2", "3", "4", "6" ou "8"
             // Les choix possibles sont présentés sous forme de boutons cliquables
             String choix = joueurCourant.choisir(
