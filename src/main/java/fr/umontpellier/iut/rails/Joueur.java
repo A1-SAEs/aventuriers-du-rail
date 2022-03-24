@@ -221,10 +221,10 @@ public class Joueur {
      * @return liste des destinations qui n'ont pas été gardées par le joueur
      */
     public List<Destination> choisirDestinations(List<Destination> destinationsPossibles, int n) {
-        /*List<Destination> destinationsNonChoisies = new ArrayList<>();
+        List<Destination> destinationsNonChoisies = new ArrayList<>();
         while(destinationsPossibles.size()>n){
 
-        }*/
+        }
         return destinationsPossibles;
     }
 
@@ -249,16 +249,29 @@ public class Joueur {
      */
     public void jouerTour() {
         List<CouleurWagon> cartesWagonVisibles = jeu.getCartesWagonVisibles(); //Récupération des cartes wagons visibles
-        List<Ville> listeVilles = jeu.getVilles();
-        List<Route> listeRoutes = jeu.getRoutes();
+        List<Ville> listeVilles = jeu.getVilles(); //Récupération des villes
+        List<Route> listeRoutes = jeu.getRoutes(); //Récupération des routes
         ArrayList<String> choix = new ArrayList<>(); //Création d'une liste de string
         for(CouleurWagon carte : cartesWagonVisibles){
             choix.add(carte.name()); //Ajout de toutes les cartes wagons visibles à la liste
+        }
+        for(Ville ville : listeVilles){
+            if(ville.getProprietaire() == null && nbGares > 0){
+                choix.add(ville.getNom());
+            }
         }
         choix.add("GRIS"); //Ajout de la pioche de cartes wagon
         choix.add("destinations"); //Ajout de la pioche de destinations
         choix.add(""); //Ajout de l'option passer
         String choixTour = this.choisir("Que voulez-vous faire à ce tour ?", choix, new ArrayList<>(),true);
+
         System.out.println(choixTour);
+        if(choixTour.equals("LOCOMOTIVE")){ //Le joueur pioche UNE SEULE locomotive de la pioche visible
+            jeu.retirerCarteWagonVisible(CouleurWagon.LOCOMOTIVE);
+        }
+
+        else if(choixTour.equals("GRIS")){ //Si le joueur pioche une carte non visible
+            this.cartesWagon.add(jeu.piocherCarteWagon());
+        }
     }
 }
