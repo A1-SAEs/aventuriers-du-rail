@@ -278,18 +278,20 @@ public class Joueur {
 
         ///////////////CHOIX DU JOUEUR///////////////
         if(choixTour.equals("LOCOMOTIVE")){ //Le joueur pioche UNE SEULE locomotive de la pioche visible
-            jeu.retirerCarteWagonVisible(CouleurWagon.LOCOMOTIVE);
+            jeu.retirerCarteWagonVisible(CouleurWagon.LOCOMOTIVE); //On lui rajoute
         }
 
-        //Si le joueur pioche dans la pile de cartes visibles
-            // On lui rajoute la carte qu'il a choisi
-            // On lui demande de faire un choix entre la pioche et la pile de cartes visibles pour sa 2e carte
-                // -> ;
+        for(CouleurWagon couleur : cartesWagonVisibles){
+            if(couleur.name().equals(choixTour)){ //Le joueur pioche une carte visible
+                jeu.retirerCarteWagonVisible(couleur); //On lui rajoute
+                piocherDeuxiemeCarte(); //Il pioche une 2e carte
+                break;
+            }
+        }
 
-        if(choixTour.equals("GRIS")){ //Si le joueur pioche une carte dans la pioche
+        if(choixTour.equals("GRIS")){ //Le joueur pioche une carte dans la pioche
             this.cartesWagon.add(jeu.piocherCarteWagon()); //On lui rajoute
-            //On lui demande de faire un choix entre la pioche et la pile de cartes visibles pour sa 2e carte
-                // -> ;
+            piocherDeuxiemeCarte(); //Il pioche une 2e carte
         }
 
         //Si le joueur veut poser une gare
@@ -322,5 +324,29 @@ public class Joueur {
                 //
             //Cas tunnel -> Crever
         return true;
+    }
+
+    public void piocherDeuxiemeCarte(){
+        List<CouleurWagon> cartesWagonVisibles = jeu.getCartesWagonVisibles(); //Récupération de la nouvelle pile visible
+        ArrayList<String> choix = new ArrayList<>(); //Création d'un nouveau choix
+        for(CouleurWagon carte : cartesWagonVisibles){
+            if(!carte.name().equals("LOCOMOTIVE")){ //Tant que ce n'est pas une locomotive
+                choix.add(carte.name()); //Ajout de toutes les cartes wagons visibles à la liste (hors locomotives)
+            }
+        }
+        choix.add("GRIS"); //On ajoute la pioche
+        String choixPioche = this.choisir("Piochez une deuxième carte (dans la pile ou dans la pioche, hors locomotive)", choix, new ArrayList<>(), false);
+
+        if(choixPioche.equals("GRIS")){
+            this.cartesWagon.add(jeu.piocherCarteWagon());
+        }
+
+        System.out.println(cartesWagonVisibles);
+        for(CouleurWagon couleur : cartesWagonVisibles) {
+            if (couleur.name().equals(choixPioche)) {
+                jeu.retirerCarteWagonVisible(couleur);
+                break;
+            }
+        }
     }
 }

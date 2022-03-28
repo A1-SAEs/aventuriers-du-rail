@@ -231,16 +231,18 @@ public class Jeu implements Runnable {
      // (remise à 5, éventuellement remélangée si 3 locomotives visibles)
     /**     by lolo     **/
     public void retirerCarteWagonVisible(CouleurWagon c) {
+        int compteurLocomotives = 0;
         if (!cartesWagonVisibles.isEmpty()){ //S'il y a des cartes dans la pioche visible
             joueurCourant.setCartesWagon(c); //On donne la carte au joueur
             cartesWagonVisibles.remove(c); //On la retire de la pile
             cartesWagonVisibles.add(piocherCarteWagon()); //On en remet une (pour en avoir toujours 5)
 
-            ArrayList<CouleurWagon> tripleLocomotive = new ArrayList<>(); //On crée un conteneur pour les 3 locomotives
-            tripleLocomotive.add(CouleurWagon.LOCOMOTIVE);
-            tripleLocomotive.add(CouleurWagon.LOCOMOTIVE);
-            tripleLocomotive.add(CouleurWagon.LOCOMOTIVE);
-            if (cartesWagonVisibles.containsAll(tripleLocomotive)){ //S'il y a 3 locomotives dans la pioche visible
+            for(CouleurWagon couleur : cartesWagonVisibles){
+                if(couleur.name().equals("LOCOMOTIVE")){
+                    compteurLocomotives++;
+                }
+            }
+            if(compteurLocomotives >= 3){ //S'il y a 3 locomotives dans la pioche visible
                 defausseCartesWagon.addAll(cartesWagonVisibles); //On met toute la pioche visible dans la défausse
                 cartesWagonVisibles.clear(); //On vide la pioche visible
                 for(int i = 0; i<5;i++){ //On rajoute 5 nouvelles cartes dans la pioche visible

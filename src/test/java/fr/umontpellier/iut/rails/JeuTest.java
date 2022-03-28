@@ -108,6 +108,7 @@ class JeuTest {
     //A refaire/revoir
     @Test
     public void test_3_locomotives() {
+        cartesWagonVisibles.clear();
         for (int i = 0; i < 3; i++) {
             cartesWagonVisibles.add(CouleurWagon.LOCOMOTIVE);
         }
