@@ -3,6 +3,7 @@ package fr.umontpellier.iut.rails;
 import com.google.gson.Gson;
 import fr.umontpellier.iut.gui.GameServer;
 
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -43,14 +44,6 @@ public class Jeu implements Runnable {
 
     //////Initialisation du jeu//////
     public Jeu(String[] nomJoueurs) {
-        /*
-         * ATTENTION : Cette méthode est à réécrire.
-         * 
-         * Le code indiqué ici est un squelette minimum pour que le jeu se lance et que
-         * l'interface graphique fonctionne.
-         * Vous devez modifier ce code pour que les différents éléments du jeu soient
-         * correctement initialisés.
-         */
 
         // Initialisation des entrées/sorties
         inputQueue = new LinkedBlockingQueue<>();
@@ -61,6 +54,7 @@ public class Jeu implements Runnable {
         cartesWagonVisibles = new ArrayList<>();
         defausseCartesWagon = new ArrayList<>();
         pileDestinations = new ArrayList<>();
+        List<Destination> destinationsLongues = Destination.makeDestinationsLonguesEurope();
 
         // Création des joueurs
         ArrayList<Joueur.Couleur> couleurs = new ArrayList<>(Arrays.asList(Joueur.Couleur.values()));
@@ -76,6 +70,45 @@ public class Jeu implements Runnable {
         Plateau plateau = Plateau.makePlateauEurope();
         villes = plateau.getVilles();
         routes = plateau.getRoutes();
+
+        //Initialisation des cartes
+        //Cartes wagons : 110 cartes, 12*8 couleurs et 14 locomotives
+        for (int i = 0; i < 12; i++) {
+            pileCartesWagon.addAll(CouleurWagon.getCouleursSimples());
+        }
+        for (int i = 0; i < 14; i++) {
+            pileCartesWagon.add(CouleurWagon.LOCOMOTIVE);
+        }
+        Collections.shuffle(pileCartesWagon);
+
+        //Cartes destinations : 46 cartes, 40 normales, 6 longues
+        pileDestinations.addAll(Destination.makeDestinationsEurope());
+        Collections.shuffle(pileDestinations);
+
+        //Distribution des cartes wagons aux joueurs
+        for(Joueur joueur : joueurs){
+            for(int i=0; i<4; i++){
+                joueur.setCartesWagon(piocherCarteWagon());
+            }
+        }
+
+        //Mise en place de la pile visible
+        for(int i=0; i<5; i++){
+            cartesWagonVisibles.add(piocherCarteWagon());
+        }
+
+        //Distribution des cartes destination
+        //1 carte longue par joueur
+        for(Joueur joueur : joueurs) {
+            Collections.shuffle(destinationsLongues);
+            joueur.setDestinations(destinationsLongues.remove(0));
+        }
+        //3 cartes normales par joueur
+        for(Joueur joueur : joueurs) {
+            for(int i=0; i<3; i++){
+                joueur.setDestinations(piocherDestination());
+            }
+        }
     }
 
     //Getters
@@ -91,41 +124,38 @@ public class Jeu implements Runnable {
         return villes;
     }
 
-    public List<Route> getRoutes() {
-        return routes;
-    }
+    public List<Route> getRoutes() { return routes; }
 
     public Joueur getJoueurCourant() {
         return joueurCourant;
     }
 
-    public List<CouleurWagon> getDefausseCartesWagon() { return defausseCartesWagon; }
+    public List<CouleurWagon> getDefausseCartesWagon(){
+        return defausseCartesWagon;
+    }
+
+    public List<Destination> getPileDestinations() {
+        return pileDestinations;
+    }
 
     //////Exécute la partie//////
+    /* Cette méthode doit :
+     * - faire choisir à chaque joueur les destinations initiales qu'il souhaite
+     * garder : on pioche 3 destinations "courtes" et 1 destination "longue", puis
+     * le
+     * joueur peut choisir des destinations à défausser ou passer s'il ne veut plus
+     * en défausser. Il doit en garder au moins 2.
+     * - exécuter la boucle principale du jeu qui fait jouer le tour de chaque
+     * joueur à tour de rôle jusqu'à ce qu'un des joueurs n'ait plus que 2 wagons ou
+     * moins
+     * - exécuter encore un dernier tour de jeu pour chaque joueur après
+     */
     public void run() {
-        /*
-         * ATTENTION : Cette méthode est à réécrire.
-         * 
-         * Cette méthode doit :
-         * - faire choisir à chaque joueur les destinations initiales qu'il souhaite
-         * garder : on pioche 3 destinations "courtes" et 1 destination "longue", puis
-         * le
-         * joueur peut choisir des destinations à défausser ou passer s'il ne veut plus
-         * en défausser. Il doit en garder au moins 2.
-         * - exécuter la boucle principale du jeu qui fait jouer le tour de chaque
-         * joueur à tour de rôle jusqu'à ce qu'un des joueurs n'ait plus que 2 wagons ou
-         * moins
-         * - exécuter encore un dernier tour de jeu pour chaque joueur après
-         */
+        boolean finDePartie = false;
 
-        /**
-         * Le code proposé ici n'est qu'un exemple d'utilisation des méthodes pour
-         * interagir avec l'utilisateur, il n'a rien à voir avec le code de la partie et
-         * doit donc être entièrement réécrit.
-         */
-        
-        // Exemple d'utilisation
-        while (true) {
+        while (!finDePartie) { // Tant que la partie est pas finie
+            joueurCourant.jouerTour();
+
             // Le joueur doit choisir une valeur parmi "1", "2", "3", "4", "6" ou "8"
             // Les choix possibles sont présentés sous forme de boutons cliquables
             String choix = joueurCourant.choisir(
@@ -166,12 +196,12 @@ public class Jeu implements Runnable {
 
     //@param c carte à défausser
     /**     by lolo     **/
-    public void defausserCarteWagon(CouleurWagon carte) {
+    public void defausserCarteWagon(CouleurWagon c) {
         if (pileCartesWagon.isEmpty() && defausseCartesWagon.isEmpty() && cartesWagonVisibles.size() < 5){
-            cartesWagonVisibles.add(carte);
+            cartesWagonVisibles.add(c);
         }
         else{
-            defausseCartesWagon.add(carte);
+            defausseCartesWagon.add(c);
         }
     }
 
@@ -188,33 +218,35 @@ public class Jeu implements Runnable {
                 return cartePiochee; //On ne pioche pas
             }
             //Si la pile est vide mais pas la défausse
-            pileCartesWagon = defausseCartesWagon; //La défausse devient la pile
+            pileCartesWagon.addAll(defausseCartesWagon); //La défausse devient la pile
             Collections.shuffle(pileCartesWagon); //On mélange la nouvelle pile
-            defausseCartesWagon = new ArrayList<>(); //On vide la défausse
+            defausseCartesWagon.clear(); //On vide la défausse
         }
         cartePiochee = pileCartesWagon.remove(0); //On pioche une carte
         return cartePiochee; //On la retourne
     }
 
-     // Retire une carte wagon de la pile des cartes wagon visibles.
-     // Si une carte a été retirée, la pile de cartes wagons visibles est recomplétée
-     // (remise à 5, éventuellement remélangée si 3 locomotives visibles)
+    // Retire une carte wagon de la pile des cartes wagon visibles.
+    // Si une carte a été retirée, la pile de cartes wagons visibles est recomplétée
+    // (remise à 5, éventuellement remélangée si 3 locomotives visibles)
     /**     by lolo     **/
-    public void retirerCarteWagonVisible(CouleurWagon carte) {
+    public void retirerCarteWagonVisible(CouleurWagon c) {
+        int compteurLocomotives = 0;
         if (!cartesWagonVisibles.isEmpty()){ //S'il y a des cartes dans la pioche visible
-            cartesWagonVisibles.remove(carte); //On en prend une
+            joueurCourant.setCartesWagon(c); //On donne la carte au joueur
+            cartesWagonVisibles.remove(c); //On la retire de la pile
             cartesWagonVisibles.add(piocherCarteWagon()); //On en remet une (pour en avoir toujours 5)
 
-            ArrayList<CouleurWagon> tripleLocomotive = new ArrayList<>(); //On crée un conteneur pour les 3 locomotives
-            tripleLocomotive.add(CouleurWagon.LOCOMOTIVE);
-            tripleLocomotive.add(CouleurWagon.LOCOMOTIVE);
-            tripleLocomotive.add(CouleurWagon.LOCOMOTIVE);
-            if (cartesWagonVisibles.containsAll(tripleLocomotive)){ //S'il y a 3 locomotives dans la pioche visible
+            for(CouleurWagon couleur : cartesWagonVisibles){
+                if(couleur.name().equals("LOCOMOTIVE")){
+                    compteurLocomotives++;
+                }
+            }
+            if(compteurLocomotives >= 3){ //S'il y a 3 locomotives dans la pioche visible
                 defausseCartesWagon.addAll(cartesWagonVisibles); //On met toute la pioche visible dans la défausse
                 cartesWagonVisibles.clear(); //On vide la pioche visible
-                for(int i = 0; i<4;i++){ //On rajoute 5 nouvelles cartes dans la pioche visible
-                    cartesWagonVisibles.add(pileCartesWagon.get(0));
-                    pileCartesWagon.remove(0);
+                for(int i = 0; i<5;i++){ //On rajoute 5 nouvelles cartes dans la pioche visible
+                    cartesWagonVisibles.add(piocherCarteWagon());
                 }
             }
         }
@@ -226,11 +258,12 @@ public class Jeu implements Runnable {
     //@return la destination qui a été piochée (ou `null` si aucune destination disponible)
     /**     by lolo     **/
     public Destination piocherDestination() {
-        Destination destinationPioche = null; //Pas encore de destination piochée
-        if(!pileDestinations.isEmpty()){ //S'il y a des destinations disponibles
-            destinationPioche = pileDestinations.remove(0); //On pioche la première destination
+        Destination destinationPioche = null;
+        if(!pileDestinations.isEmpty()){
+            destinationPioche = pileDestinations.remove(0);
+            ;
         }
-        return destinationPioche; //On retoune la destination piochée
+        return destinationPioche;
     }
 
     //Getter
