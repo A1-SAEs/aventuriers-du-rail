@@ -248,42 +248,7 @@ public class Joueur {
      * "construire une gare", "choisir les destinations à défausser", etc.)
      */
     public void jouerTour() {
-        List<CouleurWagon> cartesWagonVisibles = jeu.getCartesWagonVisibles(); //Récupération des cartes wagons visibles
-        List<Ville> listeVilles = jeu.getVilles(); //Récupération des villes
-        List<Route> listeRoutes = jeu.getRoutes(); //Récupération des routes
-        String choixTour = choixTour();
 
-        if(choixTour.equals("LOCOMOTIVE")){ //Le joueur pioche UNE SEULE locomotive de la pioche visible
-            jeu.retirerCarteWagonVisible(CouleurWagon.LOCOMOTIVE); //On lui rajoute
-        }
-
-        for(CouleurWagon couleur : cartesWagonVisibles){
-            if(couleur.name().equals(choixTour)){ //Le joueur pioche une carte visible
-                jeu.retirerCarteWagonVisible(couleur); //On lui rajoute
-                piocherDeuxiemeCarte(); //Il pioche une 2e carte
-                break;
-            }
-        }
-
-        if(choixTour.equals("GRIS")){ //Le joueur pioche une carte dans la pioche
-            this.cartesWagon.add(jeu.piocherCarteWagon()); //On lui rajoute
-            piocherDeuxiemeCarte(); //Il pioche une 2e carte
-        }
-
-        if(choixTour.equals("destinations")){ //Le joueur pioche 3 cartes destination
-
-        }
-
-        //Si le joueur veut poser une gare
-            //On lui demande la ou les cartes à défausser
-            //On place la gare
-
-        //Si le joueur veut prendre une route
-            //On lui demande la ou les cartes à défausser
-            //On prend la route
-    }
-
-    public String choixTour(){
         ///////////////INITIALISATION DES CHOIX///////////////
         List<CouleurWagon> cartesWagonVisibles = jeu.getCartesWagonVisibles(); //Récupération des cartes wagons visibles
         List<Ville> listeVilles = jeu.getVilles(); //Récupération des villes
@@ -294,52 +259,407 @@ public class Joueur {
             choix.add(carte.name()); //Ajout de toutes les cartes wagons visibles à la liste
         }
         for(Ville ville : listeVilles){
-            if(this.peutPoserGare(ville)){ //Route sans propriétaire, où le joueur peut poser sa gare (assez de cartes et de gares)
+            if(ville.getProprietaire() == null && peutPoserGare()){ //Route sans propriétaire, où le joueur peut poser sa gare (assez de cartes et de gares)
                 choix.add(ville.getNom()); //Ajout de toutes les villes possibles
             }
         }
         for(Route route : listeRoutes){
-            if(this.peutPrendreRoute(route)){  //Route sans propriétaire, que le joueur peut prendre (assez de cartes, assez de wagon et pas une route double déjà prise)
+            if(route.getProprietaire() == null && peutPrendreRoute()){  //Route sans propriétaire, que le joueur peut prendre (assez de cartes, assez de wagon et pas une route double déjà prise)
                 choix.add(route.getNom()); //Ajout de toutes les routes possibles
             }
         }
         if(!jeu.getDefausseCartesWagon().isEmpty() || !jeu.getPileCartesWagon().isEmpty()) {
             choix.add("GRIS"); //Ajout de la pioche de cartes wagon
         }
-        if(!jeu.getPileDestinations().isEmpty()){
-            choix.add("destinations"); //Ajout de la pioche de destinations
-        }
-
+        choix.add("destinations"); //Ajout de la pioche de destinations
         choix.add(""); //Ajout de l'option passer
 
-        return this.choisir("Que voulez-vous faire à ce tour ?", choix, new ArrayList<>(),true);
-    }
+        String choixTour = this.choisir("Que voulez-vous faire à ce tour ?", choix, new ArrayList<>(),true);
 
-    public void piocherDeuxiemeCarte(){
-        List<CouleurWagon> cartesWagonVisibles = jeu.getCartesWagonVisibles(); //Récupération de la nouvelle pile visible
-        ArrayList<String> choix = new ArrayList<>(); //Création d'un nouveau choix
-        for(CouleurWagon carte : cartesWagonVisibles){
-            if(!carte.name().equals("LOCOMOTIVE")){ //Tant que ce n'est pas une locomotive
-                choix.add(carte.name()); //Ajout de toutes les cartes wagons visibles à la liste (hors locomotives)
+        ///////////////CHOIX DU JOUEUR///////////////
+        if(choixTour.equals("LOCOMOTIVE")){ //Le joueur pioche UNE SEULE locomotive de la pioche visible
+            jeu.retirerCarteWagonVisible(CouleurWagon.LOCOMOTIVE);
+        }
+
+
+        //Si le joueur pioche dans la pile de cartes visibles
+        if(choixTour.equals("ROUGE")){
+            jeu.retirerCarteWagonVisible(CouleurWagon.ROUGE);
+            ArrayList<String> choix2 = new ArrayList<>();
+            if(!jeu.getDefausseCartesWagon().isEmpty() || !jeu.getPileCartesWagon().isEmpty()) {
+                choix2.add("GRIS"); //Ajout de la pioche de cartes wagon
+            }
+            for(CouleurWagon carte : cartesWagonVisibles){
+                if(!carte.name().equals("LOCOMOTIVE")) {
+                    choix2.add(carte.name()); //Ajout de toutes les cartes wagons visibles à la liste
+                }
+            }
+            String choixPioche2 = this.choisir("Quelle carte voulez vous piocher ?", choix2, new ArrayList<>(),false);
+            if(choixPioche2.equals("ROUGE")) {
+                jeu.retirerCarteWagonVisible(CouleurWagon.ROUGE);
+            }
+            if(choixPioche2.equals("BLANC")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.BLANC);
+            }
+            if(choixPioche2.equals("NOIR")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.NOIR);
+            }
+            if(choixPioche2.equals("JAUNE")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.JAUNE);
+            }
+            if(choixPioche2.equals("ORANGE")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.ORANGE);
+            }
+            if(choixPioche2.equals("BLEU")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.BLEU);
+            }
+            if(choixPioche2.equals("VERT")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.VERT);
+            }
+            if(choixPioche2.equals("ROSE")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.ROUGE);
+            }
+            if(choixPioche2.equals("GRIS")) {
+                this.cartesWagon.add(jeu.piocherCarteWagon());
             }
         }
-        choix.add("GRIS"); //On ajoute la pioche
-        String choixPioche = this.choisir("Piochez une deuxième carte (dans la pile ou dans la pioche, hors locomotive)", choix, new ArrayList<>(), false);
-
-        if(choixPioche.equals("GRIS")){
-            this.cartesWagon.add(jeu.piocherCarteWagon());
-        }
-
-        System.out.println(cartesWagonVisibles);
-        for(CouleurWagon couleur : cartesWagonVisibles) {
-            if (couleur.name().equals(choixPioche)) {
-                jeu.retirerCarteWagonVisible(couleur);
-                break;
+        if(choixTour.equals("BLANC")){
+            jeu.retirerCarteWagonVisible(CouleurWagon.BLANC);
+            ArrayList<String> choix2 = new ArrayList<>();
+            if(!jeu.getDefausseCartesWagon().isEmpty() || !jeu.getPileCartesWagon().isEmpty()) {
+                choix2.add("GRIS"); //Ajout de la pioche de cartes wagon
+            }
+            for(CouleurWagon carte : cartesWagonVisibles){
+                if(!carte.name().equals("LOCOMOTIVE")) {
+                    choix2.add(carte.name()); //Ajout de toutes les cartes wagons visibles à la liste
+                }
+            }
+            String choixPioche2 = this.choisir("Quelle carte voulez vous piocher ?", choix2, new ArrayList<>(),false);
+            if(choixPioche2.equals("ROUGE")) {
+                jeu.retirerCarteWagonVisible(CouleurWagon.ROUGE);
+            }
+            if(choixPioche2.equals("BLANC")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.BLANC);
+            }
+            if(choixPioche2.equals("NOIR")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.NOIR);
+            }
+            if(choixPioche2.equals("JAUNE")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.JAUNE);
+            }
+            if(choixPioche2.equals("ORANGE")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.ORANGE);
+            }
+            if(choixPioche2.equals("BLEU")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.BLEU);
+            }
+            if(choixPioche2.equals("VERT")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.VERT);
+            }
+            if(choixPioche2.equals("ROSE")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.ROUGE);
+            }
+            if(choixPioche2.equals("GRIS")) {
+                this.cartesWagon.add(jeu.piocherCarteWagon());
             }
         }
+        if(choixTour.equals("NOIR")){
+            jeu.retirerCarteWagonVisible(CouleurWagon.NOIR);
+            ArrayList<String> choix2 = new ArrayList<>();
+            if(!jeu.getDefausseCartesWagon().isEmpty() || !jeu.getPileCartesWagon().isEmpty()) {
+                choix2.add("GRIS"); //Ajout de la pioche de cartes wagon
+            }
+            for(CouleurWagon carte : cartesWagonVisibles){
+                if(!carte.name().equals("LOCOMOTIVE")) {
+                    choix2.add(carte.name()); //Ajout de toutes les cartes wagons visibles à la liste
+                }
+            }
+            String choixPioche2 = this.choisir("Quelle carte voulez vous piocher ?", choix2, new ArrayList<>(),false);
+            if(choixPioche2.equals("ROUGE")) {
+                jeu.retirerCarteWagonVisible(CouleurWagon.ROUGE);
+            }
+            if(choixPioche2.equals("BLANC")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.BLANC);
+            }
+            if(choixPioche2.equals("NOIR")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.NOIR);
+            }
+            if(choixPioche2.equals("JAUNE")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.JAUNE);
+            }
+            if(choixPioche2.equals("ORANGE")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.ORANGE);
+            }
+            if(choixPioche2.equals("BLEU")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.BLEU);
+            }
+            if(choixPioche2.equals("VERT")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.VERT);
+            }
+            if(choixPioche2.equals("ROSE")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.ROUGE);
+            }
+            if(choixPioche2.equals("GRIS")) {
+                this.cartesWagon.add(jeu.piocherCarteWagon());
+            }
+        }
+        if(choixTour.equals("JAUNE")){
+            jeu.retirerCarteWagonVisible(CouleurWagon.JAUNE);
+            ArrayList<String> choix2 = new ArrayList<>();
+            if(!jeu.getDefausseCartesWagon().isEmpty() || !jeu.getPileCartesWagon().isEmpty()) {
+                choix2.add("GRIS"); //Ajout de la pioche de cartes wagon
+            }
+            for(CouleurWagon carte : cartesWagonVisibles){
+                if(!carte.name().equals("LOCOMOTIVE")) {
+                    choix2.add(carte.name()); //Ajout de toutes les cartes wagons visibles à la liste
+                }
+            }
+            String choixPioche2 = this.choisir("Quelle carte voulez vous piocher ?", choix2, new ArrayList<>(),false);
+            if(choixPioche2.equals("ROUGE")) {
+                jeu.retirerCarteWagonVisible(CouleurWagon.ROUGE);
+            }
+            if(choixPioche2.equals("BLANC")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.BLANC);
+            }
+            if(choixPioche2.equals("NOIR")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.NOIR);
+            }
+            if(choixPioche2.equals("JAUNE")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.JAUNE);
+            }
+            if(choixPioche2.equals("ORANGE")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.ORANGE);
+            }
+            if(choixPioche2.equals("BLEU")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.BLEU);
+            }
+            if(choixPioche2.equals("VERT")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.VERT);
+            }
+            if(choixPioche2.equals("ROSE")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.ROUGE);
+            }
+            if(choixPioche2.equals("GRIS")) {
+                this.cartesWagon.add(jeu.piocherCarteWagon());
+            }
+        }
+        if(choixTour.equals("ORANGE")){
+            jeu.retirerCarteWagonVisible(CouleurWagon.ORANGE);
+            ArrayList<String> choix2 = new ArrayList<>();
+            if(!jeu.getDefausseCartesWagon().isEmpty() || !jeu.getPileCartesWagon().isEmpty()) {
+                choix2.add("GRIS"); //Ajout de la pioche de cartes wagon
+            }
+            for(CouleurWagon carte : cartesWagonVisibles){
+                if(!carte.name().equals("LOCOMOTIVE")) {
+                    choix2.add(carte.name()); //Ajout de toutes les cartes wagons visibles à la liste
+                }
+            }
+            String choixPioche2 = this.choisir("Quelle carte voulez vous piocher ?", choix2, new ArrayList<>(),false);
+            if(choixPioche2.equals("ROUGE")) {
+                jeu.retirerCarteWagonVisible(CouleurWagon.ROUGE);
+            }
+            if(choixPioche2.equals("BLANC")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.BLANC);
+            }
+            if(choixPioche2.equals("NOIR")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.NOIR);
+            }
+            if(choixPioche2.equals("JAUNE")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.JAUNE);
+            }
+            if(choixPioche2.equals("ORANGE")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.ORANGE);
+            }
+            if(choixPioche2.equals("BLEU")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.BLEU);
+            }
+            if(choixPioche2.equals("VERT")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.VERT);
+            }
+            if(choixPioche2.equals("ROSE")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.ROUGE);
+            }
+            if(choixPioche2.equals("GRIS")) {
+                this.cartesWagon.add(jeu.piocherCarteWagon());
+            }
+        }
+        if(choixTour.equals("BLEU")){
+            jeu.retirerCarteWagonVisible(CouleurWagon.BLEU);
+            ArrayList<String> choix2 = new ArrayList<>();
+            if(!jeu.getDefausseCartesWagon().isEmpty() || !jeu.getPileCartesWagon().isEmpty()) {
+                choix2.add("GRIS"); //Ajout de la pioche de cartes wagon
+            }
+            for(CouleurWagon carte : cartesWagonVisibles){
+                if(!carte.name().equals("LOCOMOTIVE")) {
+                    choix2.add(carte.name()); //Ajout de toutes les cartes wagons visibles à la liste
+                }
+            }
+            String choixPioche2 = this.choisir("Quelle carte voulez vous piocher ?", choix2, new ArrayList<>(),false);
+            if(choixPioche2.equals("ROUGE")) {
+                jeu.retirerCarteWagonVisible(CouleurWagon.ROUGE);
+            }
+            if(choixPioche2.equals("BLANC")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.BLANC);
+            }
+            if(choixPioche2.equals("NOIR")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.NOIR);
+            }
+            if(choixPioche2.equals("JAUNE")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.JAUNE);
+            }
+            if(choixPioche2.equals("ORANGE")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.ORANGE);
+            }
+            if(choixPioche2.equals("BLEU")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.BLEU);
+            }
+            if(choixPioche2.equals("VERT")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.VERT);
+            }
+            if(choixPioche2.equals("ROSE")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.ROUGE);
+            }
+            if(choixPioche2.equals("GRIS")) {
+                this.cartesWagon.add(jeu.piocherCarteWagon());
+            }
+        }
+        if(choixTour.equals("VERT")){
+            jeu.retirerCarteWagonVisible(CouleurWagon.VERT);
+            ArrayList<String> choix2 = new ArrayList<>();
+            if(!jeu.getDefausseCartesWagon().isEmpty() || !jeu.getPileCartesWagon().isEmpty()) {
+                choix2.add("GRIS"); //Ajout de la pioche de cartes wagon
+            }
+            for(CouleurWagon carte : cartesWagonVisibles){
+                if(!carte.name().equals("LOCOMOTIVE")) {
+                    choix2.add(carte.name()); //Ajout de toutes les cartes wagons visibles à la liste
+                }
+            }
+            String choixPioche2 = this.choisir("Quelle carte voulez vous piocher ?", choix2, new ArrayList<>(),false);
+            if(choixPioche2.equals("ROUGE")) {
+                jeu.retirerCarteWagonVisible(CouleurWagon.ROUGE);
+            }
+            if(choixPioche2.equals("BLANC")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.BLANC);
+            }
+            if(choixPioche2.equals("NOIR")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.NOIR);
+            }
+            if(choixPioche2.equals("JAUNE")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.JAUNE);
+            }
+            if(choixPioche2.equals("ORANGE")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.ORANGE);
+            }
+            if(choixPioche2.equals("BLEU")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.BLEU);
+            }
+            if(choixPioche2.equals("VERT")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.VERT);
+            }
+            if(choixPioche2.equals("ROSE")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.ROUGE);
+            }
+            if(choixPioche2.equals("GRIS")) {
+                this.cartesWagon.add(jeu.piocherCarteWagon());
+            }
+        }
+        if(choixTour.equals("ROSE")){
+            jeu.retirerCarteWagonVisible(CouleurWagon.ROUGE);
+            ArrayList<String> choix2 = new ArrayList<>();
+            if(!jeu.getDefausseCartesWagon().isEmpty() || !jeu.getPileCartesWagon().isEmpty()) {
+                choix2.add("GRIS"); //Ajout de la pioche de cartes wagon
+            }
+            for(CouleurWagon carte : cartesWagonVisibles){
+                if(!carte.name().equals("LOCOMOTIVE")) {
+                    choix2.add(carte.name()); //Ajout de toutes les cartes wagons visibles à la liste
+                }
+            }
+            String choixPioche2 = this.choisir("Quelle carte voulez vous piocher ?", choix2, new ArrayList<>(),false);
+            if(choixPioche2.equals("ROUGE")) {
+                jeu.retirerCarteWagonVisible(CouleurWagon.ROUGE);
+            }
+            if(choixPioche2.equals("BLANC")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.BLANC);
+            }
+            if(choixPioche2.equals("NOIR")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.NOIR);
+            }
+            if(choixPioche2.equals("JAUNE")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.JAUNE);
+            }
+            if(choixPioche2.equals("ORANGE")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.ORANGE);
+            }
+            if(choixPioche2.equals("BLEU")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.BLEU);
+            }
+            if(choixPioche2.equals("VERT")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.VERT);
+            }
+            if(choixPioche2.equals("ROSE")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.ROUGE);
+            }
+            if(choixPioche2.equals("GRIS")) {
+                this.cartesWagon.add(jeu.piocherCarteWagon());
+            }
+        }
+        // On lui rajoute la carte qu'il a choisi
+        // On lui demande de faire un choix entre la pioche et la pile de cartes visibles pour sa 2e carte
+        // -> ;
+
+        if(choixTour.equals("GRIS")){ //Si le joueur pioche une carte dans la pioche
+            this.cartesWagon.add(jeu.piocherCarteWagon()); //On lui rajoute
+            //On lui demande de faire un choix entre la pioche et la pile de cartes visibles pour sa 2e carte
+            ArrayList<String> choix2 = new ArrayList<>();
+            if(!jeu.getDefausseCartesWagon().isEmpty() || !jeu.getPileCartesWagon().isEmpty()) {
+                choix2.add("GRIS"); //Ajout de la pioche de cartes wagon
+            }
+            for(CouleurWagon carte : cartesWagonVisibles){
+                if(!carte.name().equals("LOCOMOTIVE")) {
+                    choix2.add(carte.name()); //Ajout de toutes les cartes wagons visibles à la liste
+                }
+            }
+            String choixPioche2 = this.choisir("Quelle carte voulez vous piocher ?", choix2, new ArrayList<>(),false);
+            if(choixPioche2.equals("ROUGE")) {
+                jeu.retirerCarteWagonVisible(CouleurWagon.ROUGE);
+            }
+            if(choixPioche2.equals("BLANC")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.BLANC);
+            }
+            if(choixPioche2.equals("NOIR")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.NOIR);
+            }
+            if(choixPioche2.equals("JAUNE")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.JAUNE);
+            }
+            if(choixPioche2.equals("ORANGE")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.ORANGE);
+            }
+            if(choixPioche2.equals("BLEU")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.BLEU);
+            }
+            if(choixPioche2.equals("VERT")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.VERT);
+            }
+            if(choixPioche2.equals("ROSE")){
+                jeu.retirerCarteWagonVisible(CouleurWagon.ROUGE);
+            }
+            if(choixPioche2.equals("GRIS")) {
+                this.cartesWagon.add(jeu.piocherCarteWagon());
+            }
+        }
+
+        //Si le joueur veut poser une gare
+        //On lui demande la ou les cartes à défausser
+        //On place la gare
+
+
+        //Si le joueur veut prendre une route
+        //On lui demande la ou les cartes à défausser
+        //On prend la route
     }
 
-    public boolean peutPoserGare(Ville ville){
+    public boolean peutPoserGare(){
         //Si le joueur a 3 gares en stock
         // On lui demande une carte à défausser
         //Si le joueur a 2 gares en stock
@@ -350,20 +670,15 @@ public class Joueur {
         return false;
     }
 
-    public boolean peutPrendreRoute(Route route){
-        if(route.getProprietaire() == null) {
-            if (nbWagons >= route.getLongueur()) {
-                //Si le joueur a assez de wagons pour la route (route.getLongueur)
-            }
-            //Cas normal -> Route grise -> Assez de carte de la même couleur (avec ou sans loco)
-            //
-            //Cas normal -> Route couleur -> Assez de carte de la même couleur que la route (avec ou sans loco)
-            //
-            //Cas ferry -> Carte locomotive pour chaque symbole sur la route + suite de cartes de la même couleur
-            //
-            //Cas tunnel -> Crever
-        }
-
+    public boolean peutPrendreRoute(){
+        //Si le joueur a assez de wagons pour la route (route.getLongueur)
+        //Cas normal -> Route grise -> Assez de carte de la même couleur (avec ou sans loco)
+        //
+        //Cas normal -> Route couleur -> Assez de carte de la même couleur que la route (avec ou sans loco)
+        //
+        //Cas ferry -> Carte locomotive pour chaque symbole sur la route + suite de cartes de la même couleur
+        //
+        //Cas tunnel -> Crever
         return true;
     }
 }
