@@ -271,15 +271,16 @@ public class Joueur {
         }
 
         if(choixTour.equals("destinations")){ //Le joueur pioche 3 cartes destination
+
         }
 
         //Si le joueur veut poser une gare
-            //On lui demande la ou les cartes à défausser
-            //On place la gare
+        //On lui demande la ou les cartes à défausser
+        //On place la gare
 
         //Si le joueur veut prendre une route
-            //On lui demande la ou les cartes à défausser
-            //On prend la route
+        //On lui demande la ou les cartes à défausser
+        //On prend la route
     }
 
     public String choixTour(){
