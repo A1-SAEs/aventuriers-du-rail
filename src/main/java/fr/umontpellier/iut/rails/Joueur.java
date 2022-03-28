@@ -248,35 +248,11 @@ public class Joueur {
      * "construire une gare", "choisir les destinations à défausser", etc.)
      */
     public void jouerTour() {
-
-        ///////////////INITIALISATION DES CHOIX///////////////
         List<CouleurWagon> cartesWagonVisibles = jeu.getCartesWagonVisibles(); //Récupération des cartes wagons visibles
         List<Ville> listeVilles = jeu.getVilles(); //Récupération des villes
         List<Route> listeRoutes = jeu.getRoutes(); //Récupération des routes
-        ArrayList<String> choix = new ArrayList<>(); //Création d'une liste de string
+        String choixTour = choixTour();
 
-        for(CouleurWagon carte : cartesWagonVisibles){
-            choix.add(carte.name()); //Ajout de toutes les cartes wagons visibles à la liste
-        }
-        for(Ville ville : listeVilles){
-            if(ville.getProprietaire() == null && peutPoserGare()){ //Route sans propriétaire, où le joueur peut poser sa gare (assez de cartes et de gares)
-                choix.add(ville.getNom()); //Ajout de toutes les villes possibles
-            }
-        }
-        for(Route route : listeRoutes){
-            if(route.getProprietaire() == null && peutPrendreRoute()){  //Route sans propriétaire, que le joueur peut prendre (assez de cartes, assez de wagon et pas une route double déjà prise)
-                choix.add(route.getNom()); //Ajout de toutes les routes possibles
-            }
-        }
-        if(!jeu.getDefausseCartesWagon().isEmpty() || !jeu.getPileCartesWagon().isEmpty()) {
-            choix.add("GRIS"); //Ajout de la pioche de cartes wagon
-        }
-        choix.add("destinations"); //Ajout de la pioche de destinations
-        choix.add(""); //Ajout de l'option passer
-
-        String choixTour = this.choisir("Que voulez-vous faire à ce tour ?", choix, new ArrayList<>(),true);
-
-        ///////////////CHOIX DU JOUEUR///////////////
         if(choixTour.equals("LOCOMOTIVE")){ //Le joueur pioche UNE SEULE locomotive de la pioche visible
             jeu.retirerCarteWagonVisible(CouleurWagon.LOCOMOTIVE); //On lui rajoute
         }
@@ -294,6 +270,10 @@ public class Joueur {
             piocherDeuxiemeCarte(); //Il pioche une 2e carte
         }
 
+        if(choixTour.equals("destinations")){ //Le joueur pioche 3 cartes destination
+
+        }
+
         //Si le joueur veut poser une gare
             //On lui demande la ou les cartes à défausser
             //On place la gare
@@ -303,27 +283,36 @@ public class Joueur {
             //On prend la route
     }
 
-    public boolean peutPoserGare(){
-        //Si le joueur a 3 gares en stock
-            // On lui demande une carte à défausser
-        //Si le joueur a 2 gares en stock
-            // On lui demande 2 cartes à défausser (/!\ 2 cartes de la même couleur, 1 carte et 1 loco ou 2 loco)
-        //Si le joueur a 1 gare en stock
-            // On lui demande 3 cartes à défausser (/!\ 3 cartes de la même couleur, 2 cartes et 1 loco, 1 carte et 2 loco ou 3 loco)
-        //Sinon, le joueur n'a pas de gare et ne peut pas poser
-        return false;
-    }
+    public String choixTour(){
+        ///////////////INITIALISATION DES CHOIX///////////////
+        List<CouleurWagon> cartesWagonVisibles = jeu.getCartesWagonVisibles(); //Récupération des cartes wagons visibles
+        List<Ville> listeVilles = jeu.getVilles(); //Récupération des villes
+        List<Route> listeRoutes = jeu.getRoutes(); //Récupération des routes
+        ArrayList<String> choix = new ArrayList<>(); //Création d'une liste de string
 
-    public boolean peutPrendreRoute(){
-        //Si le joueur a assez de wagons pour la route (route.getLongueur)
-            //Cas normal -> Route grise -> Assez de carte de la même couleur (avec ou sans loco)
-                //
-            //Cas normal -> Route couleur -> Assez de carte de la même couleur que la route (avec ou sans loco)
-                //
-            //Cas ferry -> Carte locomotive pour chaque symbole sur la route + suite de cartes de la même couleur
-                //
-            //Cas tunnel -> Crever
-        return true;
+        for(CouleurWagon carte : cartesWagonVisibles){
+            choix.add(carte.name()); //Ajout de toutes les cartes wagons visibles à la liste
+        }
+        for(Ville ville : listeVilles){
+            if(this.peutPoserGare(ville)){ //Route sans propriétaire, où le joueur peut poser sa gare (assez de cartes et de gares)
+                choix.add(ville.getNom()); //Ajout de toutes les villes possibles
+            }
+        }
+        for(Route route : listeRoutes){
+            if(this.peutPrendreRoute(route)){  //Route sans propriétaire, que le joueur peut prendre (assez de cartes, assez de wagon et pas une route double déjà prise)
+                choix.add(route.getNom()); //Ajout de toutes les routes possibles
+            }
+        }
+        if(!jeu.getDefausseCartesWagon().isEmpty() || !jeu.getPileCartesWagon().isEmpty()) {
+            choix.add("GRIS"); //Ajout de la pioche de cartes wagon
+        }
+        if(!jeu.getPileDestinations().isEmpty()){
+            choix.add("destinations"); //Ajout de la pioche de destinations
+        }
+
+        choix.add(""); //Ajout de l'option passer
+
+        return this.choisir("Que voulez-vous faire à ce tour ?", choix, new ArrayList<>(),true);
     }
 
     public void piocherDeuxiemeCarte(){
@@ -348,5 +337,33 @@ public class Joueur {
                 break;
             }
         }
+    }
+
+    public boolean peutPoserGare(Ville ville){
+        //Si le joueur a 3 gares en stock
+        // On lui demande une carte à défausser
+        //Si le joueur a 2 gares en stock
+        // On lui demande 2 cartes à défausser (/!\ 2 cartes de la même couleur, 1 carte et 1 loco ou 2 loco)
+        //Si le joueur a 1 gare en stock
+        // On lui demande 3 cartes à défausser (/!\ 3 cartes de la même couleur, 2 cartes et 1 loco, 1 carte et 2 loco ou 3 loco)
+        //Sinon, le joueur n'a pas de gare et ne peut pas poser
+        return false;
+    }
+
+    public boolean peutPrendreRoute(Route route){
+        if(route.getProprietaire() == null) {
+            if (nbWagons >= route.getLongueur()) {
+                //Si le joueur a assez de wagons pour la route (route.getLongueur)
+            }
+            //Cas normal -> Route grise -> Assez de carte de la même couleur (avec ou sans loco)
+            //
+            //Cas normal -> Route couleur -> Assez de carte de la même couleur que la route (avec ou sans loco)
+            //
+            //Cas ferry -> Carte locomotive pour chaque symbole sur la route + suite de cartes de la même couleur
+            //
+            //Cas tunnel -> Crever
+        }
+
+        return true;
     }
 }
