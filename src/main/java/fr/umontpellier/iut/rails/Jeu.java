@@ -232,6 +232,7 @@ public class Jeu implements Runnable {
     /**     by lolo     **/
     public void retirerCarteWagonVisible(CouleurWagon c) {
         int compteurLocomotives = 0;
+        int compteurAutreCouleur = 0;
         if (!cartesWagonVisibles.isEmpty()){ //S'il y a des cartes dans la pioche visible
             joueurCourant.setCartesWagon(c); //On donne la carte au joueur
             cartesWagonVisibles.remove(c); //On la retire de la pile
@@ -241,8 +242,21 @@ public class Jeu implements Runnable {
                 if(couleur.name().equals("LOCOMOTIVE")){
                     compteurLocomotives++;
                 }
+                else{
+                    compteurAutreCouleur++;
+                }
             }
-            while(compteurLocomotives >= 3){ //Tant qu'il y a 3 locomotives dans la pioche visible
+            for(CouleurWagon couleur : pileCartesWagon){
+                if(!couleur.name().equals("LOCOMOTIVE")){
+                    compteurAutreCouleur++;
+                }
+            }
+            for(CouleurWagon couleur : defausseCartesWagon){
+                if(couleur.name().equals("LOCOMOTIVE")){
+                    compteurAutreCouleur++;
+                }
+            }
+            while(!(compteurLocomotives >= 3 && compteurAutreCouleur<=2)){ //Tant qu'il y a 3 locomotives ou plus dans la pioche visible et qu'il y a 2 autres couleurs ou moins dans toutes les piles
                 defausseCartesWagon.addAll(cartesWagonVisibles); //On met toute la pioche visible dans la défausse
                 cartesWagonVisibles.clear(); //On vide la pioche visible
                 for(int i = 0; i<5;i++){ //On rajoute 5 nouvelles cartes dans la pioche visible
