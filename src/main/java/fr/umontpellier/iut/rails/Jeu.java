@@ -242,7 +242,7 @@ public class Jeu implements Runnable {
                     compteurLocomotives++;
                 }
             }
-            if(compteurLocomotives >= 3){ //S'il y a 3 locomotives dans la pioche visible
+            while(compteurLocomotives >= 3){ //Tant qu'il y a 3 locomotives dans la pioche visible
                 defausseCartesWagon.addAll(cartesWagonVisibles); //On met toute la pioche visible dans la défausse
                 cartesWagonVisibles.clear(); //On vide la pioche visible
                 for(int i = 0; i<5;i++){ //On rajoute 5 nouvelles cartes dans la pioche visible
