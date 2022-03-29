@@ -79,6 +79,14 @@ public class Joueur {
         return destinations;
     }
 
+    public int getNbGares() {
+        return nbGares;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
     public void setCartesWagon(CouleurWagon carteWagon) {
         this.cartesWagon.add(carteWagon);
     }
@@ -253,7 +261,7 @@ public class Joueur {
         List<Ville> listeVilles = jeu.getVilles(); //Récupération des villes
         List<Route> listeRoutes = jeu.getRoutes(); //Récupération des routes
         String choixTour = choixTour();
-        String choixCarteDefausse;
+        ArrayList<String> choixCarteDefausser = choixCarteDefausser();
 
         if(choixTour.equals("LOCOMOTIVE")){ //Le joueur pioche UNE SEULE locomotive de la pioche visible
             jeu.retirerCarteWagonVisible(CouleurWagon.LOCOMOTIVE); //On lui rajoute
@@ -278,8 +286,9 @@ public class Joueur {
         for(Ville ville : listeVilles){
             if(ville.getNom().equals(choixTour)){
                 for(int i=3; i>=nbGares;i--){
+                    String choixJoueur = this.choisir("Choisissez une carte à défausser", new ArrayList<>(), choixCarteDefausser, false);
                     for(CouleurWagon carte : cartesJoueurs) {
-                        if (carte.name().equals(choixCarteDefausser())) {
+                        if (carte.name().equals(choixJoueur)) {
                             this.cartesWagon.remove(carte);
                             jeu.defausserCarteWagon(carte);
                             break;
@@ -404,12 +413,14 @@ public class Joueur {
         return Collections.frequency(listeCartesWagon, couleur);
     }
 
-    public String choixCarteDefausser(){
+    public ArrayList<String> choixCarteDefausser() {
         List<CouleurWagon> cartesWagonJoueur = this.getCartesWagon();
         ArrayList<String> choixCarte = new ArrayList<>();
-        for(CouleurWagon carte : cartesWagonJoueur){
+        for (CouleurWagon carte : cartesWagonJoueur) {
+            if (nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) + nombreCouleurWagonJoueur(carte) >= 4 - nbGares) {
                 choixCarte.add(carte.name());
             }
-        return this.choisir("Choisissez une carte à défausser", choixCarte, new ArrayList<>(), false);
         }
+        return choixCarte;
+    }
 }

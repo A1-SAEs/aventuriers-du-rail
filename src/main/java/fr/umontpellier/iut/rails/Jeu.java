@@ -138,6 +138,8 @@ public class Jeu implements Runnable {
         return pileDestinations;
     }
 
+
+
     //////Exécute la partie//////
     /* Cette méthode doit :
      * - faire choisir à chaque joueur les destinations initiales qu'il souhaite
@@ -158,7 +160,7 @@ public class Jeu implements Runnable {
 
             // Le joueur doit choisir une valeur parmi "1", "2", "3", "4", "6" ou "8"
             // Les choix possibles sont présentés sous forme de boutons cliquables
-            String choix = joueurCourant.choisir(
+            /*String choix = joueurCourant.choisir(
                     "Choisissez une taille de route.", // instruction
                     new ArrayList<>(), // choix (hors boutons, ici aucun)
                     new ArrayList<>(Arrays.asList("1", "2", "3", "4", "6", "8")), // boutons
@@ -186,7 +188,7 @@ public class Jeu implements Runnable {
             } else {
                 // Le joueur a choisi une route
                 log("Vous avez choisi la route " + choixRoute);
-            }
+            }*/
         }
     }
 
