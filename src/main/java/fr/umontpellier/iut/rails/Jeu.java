@@ -231,6 +231,7 @@ public class Jeu implements Runnable {
     // (remise à 5, éventuellement remélangée si 3 locomotives visibles)
     /**     by lolo     **/
     public void retirerCarteWagonVisible(CouleurWagon c) {
+
         int compteurLocomotives = 0;
         if (!cartesWagonVisibles.isEmpty()){ //S'il y a des cartes dans la pioche visible
             joueurCourant.setCartesWagon(c); //On donne la carte au joueur
