@@ -144,10 +144,7 @@ public class Jeu implements Runnable {
         List<Destination> destinationsLongues = Destination.makeDestinationsLonguesEurope();
 
         //Distribution des cartes destination
-        //1 carte longue par joueur
-
-
-        //3 cartes normales par joueur
+        //3 cartes normales par joueur et 1 carte longue par joueur
         for(Joueur joueur : joueurs) {
             List<Destination> premierChoix = new ArrayList<>();
             premierChoix.add(destinationsLongues.remove(0));
