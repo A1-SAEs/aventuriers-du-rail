@@ -246,7 +246,8 @@ public class Joueur {
             }
 
         }
-        return destinationsPossibles;
+        destinations.addAll(destinationsPossibles);
+        return destinationsNonChoisies;
     }
 
     /**

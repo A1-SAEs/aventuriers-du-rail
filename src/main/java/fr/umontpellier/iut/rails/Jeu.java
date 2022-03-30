@@ -144,7 +144,10 @@ public class Jeu implements Runnable {
         List<Destination> destinationsLongues = Destination.makeDestinationsLonguesEurope();
 
         //Distribution des cartes destination
-        //3 cartes normales par joueur et 1 carte longue par joueur
+        //1 carte longue par joueur
+
+
+        //3 cartes normales par joueur
         for(Joueur joueur : joueurs) {
             List<Destination> premierChoix = new ArrayList<>();
             premierChoix.add(destinationsLongues.remove(0));
@@ -164,10 +167,10 @@ public class Jeu implements Runnable {
 
         while (!finDePartie) { // Tant que la partie est pas finie
             joueurCourant.jouerTour();
-
+            /*
             // Le joueur doit choisir une valeur parmi "1", "2", "3", "4", "6" ou "8"
             // Les choix possibles sont présentés sous forme de boutons cliquables
-            /*String choix = joueurCourant.choisir(
+            String choix = joueurCourant.choisir(
                     "Choisissez une taille de route.", // instruction
                     new ArrayList<>(), // choix (hors boutons, ici aucun)
                     new ArrayList<>(Arrays.asList("1", "2", "3", "4", "6", "8")), // boutons
@@ -198,6 +201,7 @@ public class Jeu implements Runnable {
             }*/
         }
     }
+
 
     // Ajoute une carte dans la pile de défausse.
     // Dans le cas peu probable, où il y a moins de 5 cartes wagon face visibles
