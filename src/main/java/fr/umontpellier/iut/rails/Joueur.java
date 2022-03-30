@@ -268,7 +268,7 @@ public class Joueur {
         }
 
         for(CouleurWagon couleur : cartesWagonVisibles){
-            if(couleur.name().equals(choixTour)){ //Le joueur pioche une carte visible
+            if(couleur.name().equals(choixTour) && !couleur.name().equals("LOCOMOTIVE")){ //Le joueur pioche une carte visible
                 jeu.retirerCarteWagonVisible(couleur); //On lui rajoute
                 piocherDeuxiemeCarte(); //Il pioche une 2e carte
                 break;
@@ -300,10 +300,6 @@ public class Joueur {
                 break;
             }
         }
-
-        //Si le joueur veut poser une gare
-        //On lui demande la ou les cartes à défausser
-        //On place la gare
 
         //Si le joueur veut prendre une route
         //On lui demande la ou les cartes à défausser
