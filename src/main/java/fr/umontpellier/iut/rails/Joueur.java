@@ -231,20 +231,19 @@ public class Joueur {
     public List<Destination> choisirDestinations(List<Destination> destinationsPossibles, int n) {
         List<Destination> destinationsNonChoisies = new ArrayList<>();
         String choix = null;
-        while(choix == null || !choix.equals("") && destinationsPossibles.size()>n){
+        while (choix == null || !choix.equals("") && destinationsPossibles.size() > n) {
             HashSet<String> choixDestination = new HashSet<>();
-            for (Destination destination:destinationsPossibles){
+            for (Destination destination : destinationsPossibles) {
                 choixDestination.add(destination.getNom());
             }
             choix = choisir("Quelles destinations voulez-vous enlever ?", new ArrayList<>(), choixDestination, true);
-            for (Destination destination:destinationsPossibles) {
-                if(destination.getNom().equals(choix)){
+            for (Destination destination : destinationsPossibles) {
+                if (destination.getNom().equals(choix)) {
                     destinationsPossibles.remove(destination);
                     destinationsNonChoisies.add(destination);
                     break;
                 }
             }
-
         }
         destinations.addAll(destinationsPossibles);
         return destinationsNonChoisies;
@@ -391,11 +390,11 @@ public class Joueur {
                 }
             }
             if (nbGares == 2) { //Si le joueur a 2 gares en stock
-                  for(CouleurWagon couleur : listeCouleurWagons){
-                      if(nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) + nombreCouleurWagonJoueur(couleur) >= 2){
-                          return true;
-                      }
-                  }
+                for(CouleurWagon couleur : listeCouleurWagons){
+                    if(nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) + nombreCouleurWagonJoueur(couleur) >= 2){
+                        return true;
+                    }
+                }
             }
             if (nbGares == 1) { //Si le joueur a 1 gare en stock
                 for(CouleurWagon couleur : listeCouleurWagons){
@@ -412,11 +411,11 @@ public class Joueur {
         if(route.getProprietaire() == null) {
             if (nbWagons >= route.getLongueur()) { //Si le joueur a assez de wagons pour la route (route.getLongueur)
                 //Cas normal -> Route grise -> Assez de carte de la même couleur (avec ou sans loco)
-                    //
+                //
                 //Cas normal -> Route couleur -> Assez de carte de la même couleur que la route (avec ou sans loco)
-                    //
+                //
                 //Cas ferry -> Carte locomotive pour chaque symbole sur la route + suite de cartes de la même couleur
-                    //
+                //
                 //Cas tunnel -> Crever
             }
 
