@@ -54,7 +54,7 @@ public class Jeu implements Runnable {
         cartesWagonVisibles = new ArrayList<>();
         defausseCartesWagon = new ArrayList<>();
         pileDestinations = new ArrayList<>();
-        List<Destination> destinationsLongues = Destination.makeDestinationsLonguesEurope();
+
 
         // Création des joueurs
         ArrayList<Joueur.Couleur> couleurs = new ArrayList<>(Arrays.asList(Joueur.Couleur.values()));
@@ -95,19 +95,6 @@ public class Jeu implements Runnable {
         //Mise en place de la pile visible
         for(int i=0; i<5; i++){
             cartesWagonVisibles.add(piocherCarteWagon());
-        }
-
-        //Distribution des cartes destination
-        //1 carte longue par joueur
-        for(Joueur joueur : joueurs) {
-            Collections.shuffle(destinationsLongues);
-            joueur.setDestinations(destinationsLongues.remove(0));
-        }
-        //3 cartes normales par joueur
-        for(Joueur joueur : joueurs) {
-            for(int i=0; i<3; i++){
-                joueur.setDestinations(piocherDestination());
-            }
         }
     }
 
@@ -154,6 +141,29 @@ public class Jeu implements Runnable {
      */
     public void run() {
         boolean finDePartie = false;
+        List<Destination> destinationsLongues = Destination.makeDestinationsLonguesEurope();
+
+        //Distribution des cartes destination
+        //1 carte longue par joueur
+
+
+        //3 cartes normales par joueur
+        for(Joueur joueur : joueurs) {
+            List<Destination> premierChoix = new ArrayList<>();
+            premierChoix.add(destinationsLongues.remove(0));
+            for (int i = 0; i < 3; i++){
+                premierChoix.add(pileDestinations.remove(0));
+            }
+            List<Destination> destinationsNonVoulues = joueur.choisirDestinations(premierChoix,2);
+            for(Destination destination : destinationsNonVoulues){
+                if(destinationsLongues.contains(destination)){
+                    destinationsNonVoulues.remove(destination);
+                }
+                else{
+                    pileDestinations.add(destination);
+                }
+            }
+        }
 
         while (!finDePartie) { // Tant que la partie est pas finie
             joueurCourant.jouerTour();
@@ -235,6 +245,7 @@ public class Jeu implements Runnable {
     public void retirerCarteWagonVisible(CouleurWagon c) {
 
         int compteurLocomotives = 0;
+        int compteurAutreCouleur = 0;
         if (!cartesWagonVisibles.isEmpty()){ //S'il y a des cartes dans la pioche visible
             joueurCourant.setCartesWagon(c); //On donne la carte au joueur
             cartesWagonVisibles.remove(c); //On la retire de la pile
@@ -244,8 +255,21 @@ public class Jeu implements Runnable {
                 if(couleur.name().equals("LOCOMOTIVE")){
                     compteurLocomotives++;
                 }
+                else{
+                    compteurAutreCouleur++;
+                }
             }
-            if(compteurLocomotives >= 3){ //S'il y a 3 locomotives dans la pioche visible
+            for(CouleurWagon couleur : pileCartesWagon){
+                if(!couleur.name().equals("LOCOMOTIVE")){
+                    compteurAutreCouleur++;
+                }
+            }
+            for(CouleurWagon couleur : defausseCartesWagon){
+                if(couleur.name().equals("LOCOMOTIVE")){
+                    compteurAutreCouleur++;
+                }
+            }
+            while(!(compteurLocomotives >= 3 && compteurAutreCouleur<=2)){ //Tant qu'il y a 3 locomotives ou plus dans la pioche visible et qu'il y a 2 autres couleurs ou moins dans toutes les piles
                 defausseCartesWagon.addAll(cartesWagonVisibles); //On met toute la pioche visible dans la défausse
                 cartesWagonVisibles.clear(); //On vide la pioche visible
                 for(int i = 0; i<5;i++){ //On rajoute 5 nouvelles cartes dans la pioche visible

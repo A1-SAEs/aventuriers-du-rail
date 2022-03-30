@@ -230,7 +230,20 @@ public class Joueur {
      */
     public List<Destination> choisirDestinations(List<Destination> destinationsPossibles, int n) {
         List<Destination> destinationsNonChoisies = new ArrayList<>();
-        while(destinationsPossibles.size()>n){
+        String choix = null;
+        while(choix == null || !choix.equals("") && destinationsPossibles.size()>n){
+            HashSet<String> choixDestination = new HashSet<>();
+            for (Destination destination:destinationsPossibles){
+                choixDestination.add(destination.getNom());
+            }
+            choix = choisir("Quelles destinations voulez-vous enlever ?", new ArrayList<>(), choixDestination, true);
+            for (Destination destination:destinationsPossibles) {
+                if(destination.getNom().equals(choix)){
+                    destinationsPossibles.remove(destination);
+                    destinationsNonChoisies.add(destination);
+                    break;
+                }
+            }
 
         }
         return destinationsPossibles;
@@ -281,6 +294,13 @@ public class Joueur {
         }
 
         if(choixTour.equals("destinations")){ //Le joueur pioche 3 cartes destination
+            List<Destination> destinationsPossibles = new ArrayList<>();
+            for(int i = 0; i < 3; i++){
+                if(!jeu.getPileDestinations().isEmpty()){
+                    destinationsPossibles.add(jeu.getPileDestinations().remove(0));
+                }
+            }
+            jeu.getPileDestinations().addAll(choisirDestinations(destinationsPossibles,1));
         }
 
         for(Ville ville : listeVilles){
