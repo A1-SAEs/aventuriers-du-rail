@@ -54,7 +54,7 @@ public class Jeu implements Runnable {
         cartesWagonVisibles = new ArrayList<>();
         defausseCartesWagon = new ArrayList<>();
         pileDestinations = new ArrayList<>();
-        List<Destination> destinationsLongues = Destination.makeDestinationsLonguesEurope();
+
 
         // Création des joueurs
         ArrayList<Joueur.Couleur> couleurs = new ArrayList<>(Arrays.asList(Joueur.Couleur.values()));
@@ -95,19 +95,6 @@ public class Jeu implements Runnable {
         //Mise en place de la pile visible
         for(int i=0; i<5; i++){
             cartesWagonVisibles.add(piocherCarteWagon());
-        }
-
-        //Distribution des cartes destination
-        //1 carte longue par joueur
-        for(Joueur joueur : joueurs) {
-            Collections.shuffle(destinationsLongues);
-            joueur.setDestinations(destinationsLongues.remove(0));
-        }
-        //3 cartes normales par joueur
-        for(Joueur joueur : joueurs) {
-            for(int i=0; i<3; i++){
-                joueur.setDestinations(piocherDestination());
-            }
         }
     }
 
@@ -152,6 +139,29 @@ public class Jeu implements Runnable {
      */
     public void run() {
         boolean finDePartie = false;
+        List<Destination> destinationsLongues = Destination.makeDestinationsLonguesEurope();
+
+        //Distribution des cartes destination
+        //1 carte longue par joueur
+
+
+        //3 cartes normales par joueur
+        for(Joueur joueur : joueurs) {
+            List<Destination> premierChoix = new ArrayList<>();
+            premierChoix.add(destinationsLongues.remove(0));
+            for (int i = 0; i < 3; i++){
+                premierChoix.add(pileDestinations.remove(0));
+            }
+            List<Destination> destinationsNonVoulues = joueur.choisirDestinations(premierChoix,2);
+            for(Destination destination : destinationsNonVoulues){
+                if(destinationsLongues.contains(destination)){
+                    destinationsNonVoulues.remove(destination);
+                }
+                else{
+                    pileDestinations.add(destination);
+                }
+            }
+        }
 
         while (!finDePartie) { // Tant que la partie est pas finie
             joueurCourant.jouerTour();
