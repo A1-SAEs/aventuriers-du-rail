@@ -274,17 +274,18 @@ public class Joueur {
         List<Ville> listeVilles = jeu.getVilles(); //Récupération des villes
         List<Route> listeRoutes = jeu.getRoutes(); //Récupération des routes
         String choixTour = choixTour();
-        ArrayList<String> choixCarteDefausser = choixCarteDefausser();
 
         if(choixTour.equals("LOCOMOTIVE")){ //Le joueur pioche UNE SEULE locomotive de la pioche visible
             jeu.retirerCarteWagonVisible(CouleurWagon.LOCOMOTIVE); //On lui rajoute
         }
 
-        for(CouleurWagon couleur : cartesWagonVisibles){
-            if(couleur.name().equals(choixTour) && !couleur.name().equals("LOCOMOTIVE")){ //Le joueur pioche une carte visible
-                jeu.retirerCarteWagonVisible(couleur); //On lui rajoute
-                piocherDeuxiemeCarte(); //Il pioche une 2e carte
-                break;
+        if(!cartesWagonVisibles.isEmpty()){
+            for(CouleurWagon couleur : cartesWagonVisibles) {
+                if (couleur.name().equals(choixTour) && !couleur.name().equals("LOCOMOTIVE")) { //Le joueur pioche une carte visible
+                    jeu.retirerCarteWagonVisible(couleur); //On lui rajoute
+                    piocherDeuxiemeCarte(); //Il pioche une 2e carte
+                    break;
+                }
             }
         }
 
@@ -305,18 +306,7 @@ public class Joueur {
 
         for(Ville ville : listeVilles){
             if(ville.getNom().equals(choixTour)){
-                for(int i=3; i>=nbGares;i--){
-                    String choixJoueur = this.choisir("Choisissez une carte à défausser", new ArrayList<>(), choixCarteDefausser, false);
-                    for(CouleurWagon carte : cartesJoueurs) {
-                        if (carte.name().equals(choixJoueur)) {
-                            this.cartesWagon.remove(carte);
-                            jeu.defausserCarteWagon(carte);
-                            break;
-                        }
-                    }
-                }
-                ville.setProprietaire(this);
-                nbGares--;
+                poserGares();
                 break;
             }
         }
@@ -407,6 +397,10 @@ public class Joueur {
         return false;
     }
 
+    public void poserGares(){
+
+    }
+
     public boolean peutPrendreRoute(Route route){
         if(route.getProprietaire() == null) {
             if (nbWagons >= route.getLongueur()) { //Si le joueur a assez de wagons pour la route (route.getLongueur)
@@ -439,4 +433,5 @@ public class Joueur {
         }
         return choixCarte;
     }
+
 }

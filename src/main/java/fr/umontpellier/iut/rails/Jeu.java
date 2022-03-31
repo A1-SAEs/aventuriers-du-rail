@@ -163,7 +163,6 @@ public class Jeu implements Runnable {
 
         while (!finDePartie) { // Tant que la partie est pas finie
             joueurCourant.jouerTour();
-
             // Le joueur doit choisir une valeur parmi "1", "2", "3", "4", "6" ou "8"
             // Les choix possibles sont présentés sous forme de boutons cliquables
             /*String choix = joueurCourant.choisir(
@@ -244,7 +243,9 @@ public class Jeu implements Runnable {
         if (!cartesWagonVisibles.isEmpty()){ //S'il y a des cartes dans la pioche visible
             joueurCourant.setCartesWagon(c); //On donne la carte au joueur
             cartesWagonVisibles.remove(c); //On la retire de la pile
-            cartesWagonVisibles.add(piocherCarteWagon()); //On en remet une (pour en avoir toujours 5)
+            if(!pileCartesWagon.isEmpty()) {
+                cartesWagonVisibles.add(piocherCarteWagon()); //On en remet une (pour en avoir toujours 5)
+            }
 
             for(CouleurWagon couleur : cartesWagonVisibles){
                 if(couleur.name().equals("LOCOMOTIVE")){
