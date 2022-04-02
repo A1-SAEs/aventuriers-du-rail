@@ -72,10 +72,10 @@ public class Jeu implements Runnable {
 
         //Initialisation des cartes
         //Cartes wagons : 110 cartes, 12*8 couleurs et 14 locomotives
-        for (int i = 0; i < 12; i++) {
+        for (int i = 0; i < 6; i++) {
             pileCartesWagon.addAll(CouleurWagon.getCouleursSimples());
         }
-        for (int i = 0; i < 14; i++) {
+        for (int i = 0; i < 8; i++) {
             pileCartesWagon.add(CouleurWagon.LOCOMOTIVE);
         }
         Collections.shuffle(pileCartesWagon);
@@ -150,14 +150,6 @@ public class Jeu implements Runnable {
                 premierChoix.add(pileDestinations.remove(0));
             }
             List<Destination> destinationsNonVoulues = joueur.choisirDestinations(premierChoix,2);
-            for(Destination destination : destinationsNonVoulues){
-                if(destinationsLongues.contains(destination)){
-                    destinationsNonVoulues.remove(destination);
-                }
-                else{
-                    pileDestinations.add(destination);
-                }
-            }
         }
 
 
@@ -228,8 +220,13 @@ public class Jeu implements Runnable {
             pileCartesWagon.addAll(defausseCartesWagon); //La défausse devient la pile
             Collections.shuffle(pileCartesWagon); //On mélange la nouvelle pile
             defausseCartesWagon.clear(); //On vide la défausse
+            while(cartesWagonVisibles.size()<5){
+                cartesWagonVisibles.add(piocherCarteWagon());
+            }
         }
-        cartePiochee = pileCartesWagon.remove(0); //On pioche une carte
+        else {
+            cartePiochee = pileCartesWagon.remove(0); //On pioche une carte
+        }
         return cartePiochee; //On la retourne
     }
 

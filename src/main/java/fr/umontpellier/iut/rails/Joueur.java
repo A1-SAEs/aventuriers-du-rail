@@ -351,13 +351,16 @@ public class Joueur {
     public void piocherDeuxiemeCarte(){
         List<CouleurWagon> cartesWagonVisibles = jeu.getCartesWagonVisibles(); //Récupération de la nouvelle pile visible
         ArrayList<String> choix = new ArrayList<>(); //Création d'un nouveau choix
-        for(CouleurWagon carte : cartesWagonVisibles){
-            if(!carte.name().equals("LOCOMOTIVE")){ //Tant que ce n'est pas une locomotive
-                choix.add(carte.name()); //Ajout de toutes les cartes wagons visibles à la liste (hors locomotives)
+        if(!cartesWagonVisibles.isEmpty()) {
+            for (CouleurWagon carte : cartesWagonVisibles) {
+                if (!carte.name().equals("LOCOMOTIVE")) { //Tant que ce n'est pas une locomotive
+                    choix.add(carte.name()); //Ajout de toutes les cartes wagons visibles à la liste (hors locomotives)
+                }
             }
         }
         choix.add("GRIS"); //On ajoute la pioche
-        String choixPioche = this.choisir("Piochez une deuxième carte (dans la pile ou dans la pioche, hors locomotive)", choix, new ArrayList<>(), false);
+        choix.add("");
+        String choixPioche = this.choisir("Piochez une deuxième carte (dans la pile ou dans la pioche, hors locomotive)", choix, new ArrayList<>(), true);
 
         if(choixPioche.equals("GRIS")){
             this.cartesWagon.add(jeu.piocherCarteWagon());
