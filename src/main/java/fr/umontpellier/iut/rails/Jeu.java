@@ -140,53 +140,43 @@ public class Jeu implements Runnable {
      */
     public void run() {
         boolean finDePartie = false;
+        int tour = 0;
         List<Destination> destinationsLongues = Destination.makeDestinationsLonguesEurope();
 
         //Distribution des cartes destination
-        for(Joueur joueur : joueurs) {
+        for(int i=0; i<joueurs.size(); i++) {
             List<Destination> premierChoix = new ArrayList<>();
             premierChoix.add(destinationsLongues.remove(0));
-            for (int i = 0; i < 3; i++){
+            for (int j = 0; j < 3; j++){
                 premierChoix.add(pileDestinations.remove(0));
             }
-            joueur.choisirDestinations(premierChoix,2);
+            joueurCourant.choisirDestinations(premierChoix,2);
+            tour++;
+            joueurCourant = joueurs.get(tour%joueurs.size());
         }
 
 
         while (!finDePartie) { // Tant que la partie est pas finie
+            log("---------- Tour de " + joueurCourant.toLog() + " ----------");
             joueurCourant.jouerTour();
-            // Le joueur doit choisir une valeur parmi "1", "2", "3", "4", "6" ou "8"
-            // Les choix possibles sont présentés sous forme de boutons cliquables
-            /*String choix = joueurCourant.choisir(
-                    "Choisissez une taille de route.", // instruction
-                    new ArrayList<>(), // choix (hors boutons, ici aucun)
-                    new ArrayList<>(Arrays.asList("1", "2", "3", "4", "6", "8")), // boutons
-                    false); // le joueur ne peut pas passer (il doit faire un choix)
-
-            // Une fois la longueur choisie, on filtre les routes pour ne garder que les routes de la longueur choisie
-            int longueurRoute = Integer.parseInt(choix);
-            ArrayList<String> routesPossibles = new ArrayList<>();
-            for (Route route : routes) {
-                if (route.getLongueur() == longueurRoute) {
-                    routesPossibles.add(route.getNom());
-                }
+            tour++;
+            if(joueurCourant.getNbWagons() <= 2){
+                finDePartie = true;
             }
-
-            // Le joueur doit maintenant choisir une route de la longueur choisie (les
-            // autres ne sont pas acceptées). Le joueur peut choisir de passer (aucun choix)
-            String choixRoute = joueurCourant.choisir(
-                    "Choisissez une route de longueur " + longueurRoute, // instruction
-                    routesPossibles, // Choix (pas des boutons, il faut cliquer sur la carte)
-                    new ArrayList<>(), // Boutons (ici aucun bouton créé)
-                    true); // Le joueur peut passer sans faire de choix
-            if (choixRoute.equals("")) {
-                // Le joueur n'a pas fait de choix (cliqué sur le bouton "passer")
-                log("Aucune route n'a été choisie");
-            } else {
-                // Le joueur a choisi une route
-                log("Vous avez choisi la route " + choixRoute);
-            }*/
+            joueurCourant = joueurs.get(tour%joueurs.size());
         }
+
+        log("---------- Dernier tour ----------");
+        for(int k=0; k<joueurs.size(); k++){
+            joueurCourant.jouerTour();
+            tour++;
+            joueurCourant = joueurs.get(tour%joueurs.size());
+        }
+        log("---------- Tableau des scores ----------");
+        for(Joueur joueur : joueurs){
+            log(joueur.getNom() + " : " + joueur.getScore() + " points");
+        }
+        prompt("Fin de partie", new ArrayList<>(), false);
     }
 
     // Ajoute une carte dans la pile de défausse.
@@ -213,7 +203,6 @@ public class Jeu implements Runnable {
     public CouleurWagon piocherCarteWagon() {
         CouleurWagon cartePiochee = null; //Pas encore de carte piochée
         if (pileCartesWagon.isEmpty()){ //Si la pile de cartes est vide
-            log("oui");
             if(defausseCartesWagon.isEmpty()){ //Si la défausse est aussi vide
                 return cartePiochee; //On ne pioche pas
             }
