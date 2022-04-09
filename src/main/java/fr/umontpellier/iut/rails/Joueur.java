@@ -95,6 +95,10 @@ public class Joueur {
         this.destinations.add(carteDestination);
     }
 
+    public void setNbWagons(int nbWagons) {
+        this.nbWagons = nbWagons;
+    }
+
     /**
      * Attend une entrée de la part du joueur (au clavier ou sur la websocket) et
      * renvoie le choix du joueur.
@@ -335,7 +339,7 @@ public class Joueur {
         }
 
         for(Route route : listeRoutes){
-            if(this.peutPrendreRoute(route)){  //Route sans propriétaire, que le joueur peut prendre (assez de cartes, assez de wagon et pas une route double déjà prise)
+            if(route.peutPrendreRoute(this,jeu)){  //Route sans propriétaire, que le joueur peut prendre (assez de cartes, assez de wagon et pas une route double déjà prise)
                 choix.add(route.getNom()); //Ajout de toutes les routes possibles
             }
         }
@@ -431,22 +435,8 @@ public class Joueur {
         score -= 4;
     }
 
-    public boolean peutPrendreRoute(Route route){
-        if(route.getProprietaire() == null) {
-            if (nbWagons >= route.getLongueur()) { //Si le joueur a assez de wagons pour la route (route.getLongueur)
-                //Cas normal -> Route grise -> Assez de carte de la même couleur (avec ou sans loco)
-                //
-                //Cas normal -> Route couleur -> Assez de carte de la même couleur que la route (avec ou sans loco)
-                //
-                //Cas ferry -> Carte locomotive pour chaque symbole sur la route + suite de cartes de la même couleur
-                //
-                //Cas tunnel -> Crever
-            }
 
-        }
 
-        return true;
-    }
 
     public int nombreCouleurWagonJoueur(CouleurWagon couleur){
         List<CouleurWagon> listeCartesWagon = this.getCartesWagon();
