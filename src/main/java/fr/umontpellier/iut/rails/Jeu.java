@@ -169,10 +169,41 @@ public class Jeu implements Runnable {
 
         log("---------- Dernier tour ----------");
         for(int k=0; k<joueurs.size(); k++){
+            log("---------- Tour de " + joueurCourant.toLog() + " ----------");
             joueurCourant.jouerTour();
             tour++;
             joueurCourant = joueurs.get(tour%joueurs.size());
         }
+
+        List<Ville> villesJoueur = new ArrayList<>();
+        List<String> routesJoueur = new ArrayList<>();
+        for(Joueur joueur : joueurs){
+            joueurCourant = joueur;
+            if(joueurCourant.getNbGares()<3) {
+                for (Ville ville : this.getVilles()) {
+                    if (ville.getProprietaire() == joueurCourant) {
+                        villesJoueur.add(ville);
+                    }
+                }
+                for (Route route : this.getRoutes()) {
+                    if ((villesJoueur.contains(route.getVille1()) || villesJoueur.contains(route.getVille2())) && route.getProprietaire() != null && route.getProprietaire() != joueurCourant) {
+                        routesJoueur.add(route.getNom());
+                    }
+                }
+                for (int i = 0; i < 3 - joueurCourant.getNbGares(); i++) {
+                    String choixRoutesGares = joueurCourant.choisir("Veuillez choisir quelle(s) route(s) associer à vos gares", routesJoueur, new ArrayList<>(), true);
+
+                    for (Route route : this.getRoutes()) {
+                        if (choixRoutesGares.equals(route.getNom())) {
+                            joueurCourant.setRouteEmpruntees(route);
+                            routesJoueur.remove(route.getNom());
+                            log(joueurCourant.toLog() + " a emprunté la route " + route.toLog());
+                        }
+                    }
+                }
+            }
+        }
+
         log("---------- Tableau des scores ----------");
         for(Joueur joueur : joueurs){
             log(joueur.getNom() + " : " + joueur.getScore() + " points");

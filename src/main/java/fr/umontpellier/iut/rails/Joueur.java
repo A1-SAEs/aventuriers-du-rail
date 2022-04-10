@@ -37,16 +37,20 @@ public class Joueur {
     // Score courant du joueur (somme des valeurs des routes capturées)
     private int score;
 
+    // Liste des routes empruntées par le joueur via gare
+    private List<Route> routeEmpruntees;
+
     //////Initialisation d'un joueur//////
     public Joueur(String nom, Jeu jeu, Joueur.Couleur couleur) {
         this.nom = nom;
         this.jeu = jeu;
         this.couleur = couleur;
         nbGares = 3;
-        nbWagons = 45;
+        nbWagons = 10;
         cartesWagon = new ArrayList<>();
         cartesWagonPosees = new ArrayList<>();
         destinations = new ArrayList<>();
+        routeEmpruntees = new ArrayList<>();
         score = 12; // Chaque gare non utilisée vaut 4 points
     }
 
@@ -96,6 +100,10 @@ public class Joueur {
     }
 
     public void setNbWagons(int nbWagons) { this.nbWagons = nbWagons;
+    }
+
+    public void setRouteEmpruntees(Route route) {
+        this.routeEmpruntees.add(route);
     }
 
     public void setCartesWagonPosees(CouleurWagon cartePosee) {
