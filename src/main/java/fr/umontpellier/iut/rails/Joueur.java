@@ -37,6 +37,9 @@ public class Joueur {
     // Score courant du joueur (somme des valeurs des routes capturées)
     private int score;
 
+    // Liste des routes empruntées par le joueur via gare
+    private List<Route> routeEmpruntees;
+
     //////Initialisation d'un joueur//////
     public Joueur(String nom, Jeu jeu, Joueur.Couleur couleur) {
         this.nom = nom;
@@ -47,10 +50,11 @@ public class Joueur {
         cartesWagon = new ArrayList<>();
         cartesWagonPosees = new ArrayList<>();
         destinations = new ArrayList<>();
+        routeEmpruntees = new ArrayList<>();
         score = 12; // Chaque gare non utilisée vaut 4 points
     }
 
-    //Getters
+    //Getters & Setters
     public String getNom() {
         return nom;
     }
@@ -77,6 +81,33 @@ public class Joueur {
 
     public List<Destination> getDestinations() {
         return destinations;
+    }
+
+    public int getNbGares() {
+        return nbGares;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setCartesWagon(CouleurWagon carteWagon) {
+        this.cartesWagon.add(carteWagon);
+    }
+
+    public void setDestinations(Destination carteDestination) {
+        this.destinations.add(carteDestination);
+    }
+
+    public void setNbWagons(int nbWagons) { this.nbWagons = nbWagons;
+    }
+
+    public void setRouteEmpruntees(Route route) {
+        this.routeEmpruntees.add(route);
+    }
+
+    public void setCartesWagonPosees(CouleurWagon cartePosee) {
+        this.cartesWagonPosees.add(cartePosee);
     }
 
     /**
@@ -213,7 +244,24 @@ public class Joueur {
      * @return liste des destinations qui n'ont pas été gardées par le joueur
      */
     public List<Destination> choisirDestinations(List<Destination> destinationsPossibles, int n) {
-        throw new RuntimeException("Méthode non implémentée !");
+        List<Destination> destinationsNonChoisies = new ArrayList<>();
+        String choix = null;
+        while (choix == null || !choix.equals("") && destinationsPossibles.size() > n) {
+            HashSet<String> choixDestination = new HashSet<>();
+            for (Destination destination : destinationsPossibles) {
+                choixDestination.add(destination.getNom());
+            }
+            choix = choisir("Quelles destinations voulez-vous enlever (2 max) ?", new ArrayList<>(), choixDestination, true);
+            for (Destination destination : destinationsPossibles) {
+                if (destination.getNom().equals(choix)) {
+                    destinationsPossibles.remove(destination);
+                    destinationsNonChoisies.add(destination);
+                    break;
+                }
+            }
+        }
+        destinations.addAll(destinationsPossibles);
+        return destinationsNonChoisies;
     }
 
     /**
@@ -236,6 +284,206 @@ public class Joueur {
      * "construire une gare", "choisir les destinations à défausser", etc.)
      */
     public void jouerTour() {
-        throw new RuntimeException("Méthode non implémentée !");
+        List<CouleurWagon> cartesWagonVisibles = jeu.getCartesWagonVisibles(); //Récupération des cartes wagons visibles
+        List<Ville> listeVilles = jeu.getVilles(); //Récupération des villes
+        List<Route> listeRoutes = jeu.getRoutes(); //Récupération des routes
+        String choixTour = choixTour();
+
+        if(choixTour.equals("LOCOMOTIVE")){ //Le joueur pioche UNE SEULE locomotive de la pioche visible
+            jeu.retirerCarteWagonVisible(CouleurWagon.LOCOMOTIVE); //On lui rajoute
+            log(this.toLog() + " a pioché " + CouleurWagon.LOCOMOTIVE.toLog());
+        }
+
+        if(!cartesWagonVisibles.isEmpty()){
+            for(CouleurWagon couleurWagon : cartesWagonVisibles) {
+                if (couleurWagon.name().equals(choixTour) && !couleurWagon.name().equals("LOCOMOTIVE")) { //Le joueur pioche une carte visible
+                    jeu.retirerCarteWagonVisible(couleurWagon); //On lui rajoute
+                    log(this.toLog() + " a pioché " + couleurWagon.toLog());
+                    piocherDeuxiemeCarte(); //Il pioche une 2e carte
+                    break;
+                }
+            }
+        }
+
+        if(choixTour.equals("GRIS")){ //Le joueur pioche une carte dans la pioche
+            if(jeu.getPileCartesWagon().isEmpty() && !jeu.getDefausseCartesWagon().isEmpty()) {
+                jeu.defausserDansPile();
+            }
+            this.cartesWagon.add(jeu.piocherCarteWagon()); //On lui rajoute
+            log(this.toLog() + " a pioché");
+            piocherDeuxiemeCarte(); //Il pioche une 2e carte
+        }
+
+        if(choixTour.equals("destinations")){ //Le joueur pioche 3 cartes destination
+            List<Destination> destinationsPossibles = new ArrayList<>();
+            for(int i = 0; i < 3; i++){
+                if(!jeu.getPileDestinations().isEmpty()){
+                    destinationsPossibles.add(jeu.getPileDestinations().remove(0));
+                }
+            }
+            jeu.getPileDestinations().addAll(choisirDestinations(destinationsPossibles,1));
+            log(this.toLog() + " a pioché des destinations");
+        }
+
+        for(Ville ville : listeVilles){
+            if(ville.getNom().equals(choixTour)){
+                poserGares(ville);
+                log(this.toLog() + " a posé une gare sur " + ville.toLog());
+                break;
+            }
+        }
+
+        for(Route route : listeRoutes){
+            if(route.getNom().equals(choixTour)){
+                route.prendreRoute(this, jeu);
+                if(route.getProprietaire() == this) {
+                    calculerPointsRoute(route);
+                }
+                cartesWagonPosees.clear();
+                log(this.toLog() + " a capturé la route " + route.toLog());
+                break;
+            }
+        }
+    }
+
+    public String choixTour(){
+        ///////////////INITIALISATION DES CHOIX///////////////
+        List<CouleurWagon> cartesWagonVisibles = jeu.getCartesWagonVisibles(); //Récupération des cartes wagons visibles
+        List<Ville> listeVilles = jeu.getVilles(); //Récupération des villes
+        List<Route> listeRoutes = jeu.getRoutes(); //Récupération des routes
+        ArrayList<String> choix = new ArrayList<>(); //Création d'une liste de string
+
+        if(!cartesWagonVisibles.isEmpty()) {
+            for (CouleurWagon carte : cartesWagonVisibles) {
+                choix.add(carte.name()); //Ajout de toutes les cartes wagons visibles à la liste
+            }
+        }
+
+        for(Ville ville : listeVilles){
+            if(this.peutPoserGare(ville)){ //Route sans propriétaire, où le joueur peut poser sa gare (assez de cartes et de gares)
+                choix.add(ville.getNom()); //Ajout de toutes les villes possibles
+            }
+        }
+
+        for(Route route : listeRoutes){
+            if(route.peutPrendreRouteDouble(this, jeu) && route.peutPrendreRoute(this)){  //Route sans propriétaire, que le joueur peut prendre (assez de cartes, assez de wagon et pas une route double déjà prise)
+                choix.add(route.getNom()); //Ajout de toutes les routes possibles
+            }
+        }
+
+        if(!jeu.getPileCartesWagon().isEmpty() || !jeu.getDefausseCartesWagon().isEmpty()) {
+            choix.add("GRIS"); //Ajout de la pioche de cartes wagon
+        }
+
+        if(!jeu.getPileDestinations().isEmpty()){
+            choix.add("destinations"); //Ajout de la pioche de destinations
+        }
+
+        choix.add(""); //Ajout de l'option passer
+
+        return this.choisir("Que voulez-vous faire à ce tour ?", choix, new ArrayList<>(),true);
+    }
+
+    public void piocherDeuxiemeCarte(){
+        List<CouleurWagon> cartesWagonVisibles = jeu.getCartesWagonVisibles(); //Récupération de la nouvelle pile visible
+        ArrayList<String> choix = new ArrayList<>(); //Création d'un nouveau choix
+        if(!cartesWagonVisibles.isEmpty()) {
+            for (CouleurWagon carte : cartesWagonVisibles) {
+                if (!carte.name().equals("LOCOMOTIVE")) { //Tant que ce n'est pas une locomotive
+                    choix.add(carte.name()); //Ajout de toutes les cartes wagons visibles à la liste (hors locomotives)
+                }
+            }
+        }
+        if(!jeu.getPileCartesWagon().isEmpty() || !jeu.getDefausseCartesWagon().isEmpty()) {
+            choix.add("GRIS"); //Ajout de la pioche de cartes wagon
+        }
+        choix.add("");
+        String choixPioche = this.choisir("Piochez une deuxième carte (dans la pile ou dans la pioche, hors locomotive)", choix, new ArrayList<>(), true);
+
+        if(choixPioche.equals("GRIS")){
+            this.cartesWagon.add(jeu.piocherCarteWagon());
+            log(this.toLog() + " a pioché ");
+        }
+
+        for(CouleurWagon couleurWagon : cartesWagonVisibles) {
+            if (couleurWagon.name().equals(choixPioche)) {
+                jeu.retirerCarteWagonVisible(couleurWagon);
+                log(this.toLog() + " a pioché " + couleurWagon.toLog());
+                break;
+            }
+        }
+    }
+
+    public boolean peutPoserGare(Ville ville){
+        int prixGare = 4-nbGares;
+        List<CouleurWagon> listeCouleurWagons = CouleurWagon.getCouleursSimples();
+        if(ville.getProprietaire() == null && nbGares>0) {
+            for(CouleurWagon couleurWagon : listeCouleurWagons){
+                    if(nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) + nombreCouleurWagonJoueur(couleurWagon) >= prixGare){
+                        return true;
+                    }
+                }
+            }
+        return false;
+    }
+
+    public void poserGares(Ville ville){
+        int prixGare = 4-nbGares;
+        CouleurWagon couleurChoisie = null;
+        List<CouleurWagon> listeCouleurWagons = CouleurWagon.getCouleursSimples();
+        ArrayList<String> choixCartesPossibles = new ArrayList<>();
+        for(CouleurWagon couleurWagon : listeCouleurWagons){
+            if(nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) + nombreCouleurWagonJoueur(couleurWagon) >= prixGare){
+                choixCartesPossibles.add(couleurWagon.name());
+            }
+        }
+        choixCartesPossibles.add(CouleurWagon.LOCOMOTIVE.name());
+
+        while(prixGare != 0){
+            String choixJoueur = choisir("Choisissez " + prixGare + " carte(s) à défausser", choixCartesPossibles, new ArrayList<>(), false);
+
+            if(choixJoueur.equals(CouleurWagon.LOCOMOTIVE.name())){
+                this.getCartesWagon().remove((CouleurWagon.LOCOMOTIVE));
+                jeu.defausserCarteWagon(CouleurWagon.LOCOMOTIVE);
+                prixGare--;
+            }
+
+            if(couleurChoisie==null){
+                for(CouleurWagon couleurWagon : listeCouleurWagons){
+                    if(choixJoueur.equals(couleurWagon.name())){
+                        couleurChoisie = couleurWagon;
+                        this.getCartesWagon().remove(couleurChoisie);
+                        jeu.defausserCarteWagon(couleurChoisie);
+                        prixGare--;
+                    }
+                }
+            }
+            else if(choixJoueur.equals(couleurChoisie.name())){
+                this.getCartesWagon().remove(couleurChoisie);
+                jeu.defausserCarteWagon(couleurChoisie);
+                prixGare--;
+            }
+        }
+        ville.setProprietaire(this);
+        nbGares--;
+        score -= 4;
+    }
+
+
+    public void calculerPointsRoute(Route route){
+        switch (route.getLongueur()) {
+            case 1 -> score++;
+            case 2 -> score += 2;
+            case 3 -> score += 4;
+            case 4 -> score += 7;
+            case 6 -> score += 15;
+            case 8 -> score += 21;
+        }
+    }
+
+    public int nombreCouleurWagonJoueur(CouleurWagon couleur){
+        List<CouleurWagon> listeCartesWagon = this.getCartesWagon();
+        return Collections.frequency(listeCartesWagon, couleur);
     }
 }
+
