@@ -20,6 +20,7 @@ public class Ferry extends Route {
                 nbLocomotives);
     }
 
+    @Override
     public boolean peutPrendreRoute(Joueur joueur, Jeu jeu){
         List<CouleurWagon> listeCouleurWagons = CouleurWagon.getCouleursSimples();
         List<Route> listeRoutes = jeu.getRoutes();
@@ -36,18 +37,19 @@ public class Ferry extends Route {
         return false;
     }
 
+    @Override
     public void prendreRoute(Joueur joueur, Jeu jeu){
-        int nombre = 0;
+        int prixRoute = 0;
         CouleurWagon couleurChoisie = null;
         List<CouleurWagon> listeCouleurWagons = CouleurWagon.getCouleursSimples();
         ArrayList<String> choixCartesPossibles = new ArrayList<>();
 
         choixCartesPossibles.add(CouleurWagon.LOCOMOTIVE.name());
 
-        while(nombre<nbLocomotives){
+        while(prixRoute<nbLocomotives){
             joueur.getCartesWagon().remove((CouleurWagon.LOCOMOTIVE));
             jeu.defausserCarteWagon(CouleurWagon.LOCOMOTIVE);
-            nombre++;
+            prixRoute++;
         }
 
         choixCartesPossibles.clear();
@@ -60,13 +62,13 @@ public class Ferry extends Route {
 
         choixCartesPossibles.add(CouleurWagon.LOCOMOTIVE.name());
 
-        while(nombre <this.getLongueur()){
-            String choixJoueur = joueur.choisir("Choississez une carte à défausser", choixCartesPossibles, new ArrayList<>(), false);
+        while(prixRoute <this.getLongueur()){
+            String choixJoueur = joueur.choisir("Choisissez " + prixRoute + " carte(s) à défausser (hors locomotives obligatoires demandées par le ferry)", choixCartesPossibles, new ArrayList<>(), false);
 
             if(choixJoueur.equals(CouleurWagon.LOCOMOTIVE.name())){
                 joueur.getCartesWagon().remove((CouleurWagon.LOCOMOTIVE));
                 jeu.defausserCarteWagon(CouleurWagon.LOCOMOTIVE);
-                nombre++;
+                prixRoute++;
             }
 
             if(couleurChoisie==null){
@@ -75,7 +77,7 @@ public class Ferry extends Route {
                         couleurChoisie = couleurWagon;
                         joueur.getCartesWagon().remove(couleurChoisie);
                         jeu.defausserCarteWagon(couleurChoisie);
-                        nombre++;
+                        prixRoute++;
                     }
                 }
             }
@@ -83,7 +85,7 @@ public class Ferry extends Route {
             else if(choixJoueur.equals(couleurChoisie.name())){
                 joueur.getCartesWagon().remove(couleurChoisie);
                 jeu.defausserCarteWagon(couleurChoisie);
-                nombre++;
+                prixRoute++;
             }
         }
         this.setProprietaire(joueur);

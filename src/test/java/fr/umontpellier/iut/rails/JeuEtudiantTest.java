@@ -54,7 +54,7 @@ class JeuEtudiantTest {
         defausseCartesWagon.addAll(pileCartesWagon);
         pileCartesWagon.clear();
         Partie.piocherCarteWagon();
-        assertEquals(97, pileCartesWagon.size());
+        assertEquals(96, pileCartesWagon.size());
     }
 
     //Fonctionne

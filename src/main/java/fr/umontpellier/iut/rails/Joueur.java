@@ -98,6 +98,10 @@ public class Joueur {
     public void setNbWagons(int nbWagons) { this.nbWagons = nbWagons;
     }
 
+    public void setCartesWagonPosees(CouleurWagon cartePosee) {
+        this.cartesWagonPosees.add(cartePosee);
+    }
+
     /**
      * Attend une entrée de la part du joueur (au clavier ou sur la websocket) et
      * renvoie le choix du joueur.
@@ -239,7 +243,7 @@ public class Joueur {
             for (Destination destination : destinationsPossibles) {
                 choixDestination.add(destination.getNom());
             }
-            choix = choisir("Quelles destinations voulez-vous enlever ?", new ArrayList<>(), choixDestination, true);
+            choix = choisir("Quelles destinations voulez-vous enlever (2 max) ?", new ArrayList<>(), choixDestination, true);
             for (Destination destination : destinationsPossibles) {
                 if (destination.getNom().equals(choix)) {
                     destinationsPossibles.remove(destination);
@@ -399,7 +403,7 @@ public class Joueur {
     public boolean peutPoserGare(Ville ville){
         int prixGare = 4-nbGares;
         List<CouleurWagon> listeCouleurWagons = CouleurWagon.getCouleursSimples();
-        if(ville.getProprietaire() == null) {
+        if(ville.getProprietaire() == null && nbGares>0) {
             for(CouleurWagon couleurWagon : listeCouleurWagons){
                     if(nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) + nombreCouleurWagonJoueur(couleurWagon) >= prixGare){
                         return true;
@@ -422,7 +426,7 @@ public class Joueur {
         choixCartesPossibles.add(CouleurWagon.LOCOMOTIVE.name());
 
         while(prixGare != 0){
-            String choixJoueur = choisir("Choississez une carte à défausser", choixCartesPossibles, new ArrayList<>(), false);
+            String choixJoueur = choisir("Choisissez " + prixGare + " carte(s) à défausser", choixCartesPossibles, new ArrayList<>(), false);
 
             if(choixJoueur.equals(CouleurWagon.LOCOMOTIVE.name())){
                 this.getCartesWagon().remove((CouleurWagon.LOCOMOTIVE));

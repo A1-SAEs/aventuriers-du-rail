@@ -14,6 +14,7 @@ public class Tunnel extends Route {
         return "[" + super.toString() + "]";
     }
 
+    @Override
     public boolean peutPrendreRoute(Joueur joueur, Jeu jeu){
         List<CouleurWagon> listeCouleurWagons = CouleurWagon.getCouleursSimples();
         List<Route> listeRoutes = jeu.getRoutes();
@@ -37,10 +38,9 @@ public class Tunnel extends Route {
         return false;
     }
 
-
-
+    @Override
     public void prendreRoute(Joueur joueur, Jeu jeu){
-        int nombre =0;
+        int prixRoute =0;
         CouleurWagon couleurChoisie = null;
         List<CouleurWagon> listeCouleurWagons = CouleurWagon.getCouleursSimples();
         ArrayList<String> choixCartesPossibles = new ArrayList<>();
@@ -73,13 +73,13 @@ public class Tunnel extends Route {
 
         choixCartesPossibles.add(CouleurWagon.LOCOMOTIVE.name());
 
-        while(nombre < this.getLongueur()+prixEnPlus){
-            String choixJoueur = joueur.choisir("Choississez une carte à défausser", choixCartesPossibles, new ArrayList<>(), false);
+        while(prixRoute < this.getLongueur()+prixEnPlus){
+            String choixJoueur = joueur.choisir("Choisissez " + prixRoute + " carte(s) à défausser", choixCartesPossibles, new ArrayList<>(), false);
 
             if(choixJoueur.equals(CouleurWagon.LOCOMOTIVE.name())){
                 joueur.getCartesWagon().remove((CouleurWagon.LOCOMOTIVE));
                 jeu.defausserCarteWagon(CouleurWagon.LOCOMOTIVE);
-                nombre++;
+                prixRoute++;
             }
 
             if(couleurChoisie==null){
@@ -88,7 +88,7 @@ public class Tunnel extends Route {
                         couleurChoisie = couleurWagon;
                         joueur.getCartesWagon().remove(couleurChoisie);
                         jeu.defausserCarteWagon(couleurChoisie);
-                        nombre++;
+                        prixRoute++;
                     }
                 }
             }
@@ -96,7 +96,7 @@ public class Tunnel extends Route {
             else if(choixJoueur.equals(couleurChoisie.name())){
                 joueur.getCartesWagon().remove(couleurChoisie);
                 jeu.defausserCarteWagon(couleurChoisie);
-                nombre++;
+                prixRoute++;
             }
         }
 

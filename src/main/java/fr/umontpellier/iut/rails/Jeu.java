@@ -95,6 +95,7 @@ public class Jeu implements Runnable {
         for(int i=0; i<5; i++){
             cartesWagonVisibles.add(piocherCarteWagon());
         }
+        verificationLocomotivesPiocheVisible();
     }
 
     //Getters
@@ -206,17 +207,10 @@ public class Jeu implements Runnable {
             if(defausseCartesWagon.isEmpty()){ //Si la défausse est aussi vide
                 return cartePiochee; //On ne pioche pas
             }
-            //Si la pile est vide mais pas la défausse
-            pileCartesWagon.addAll(defausseCartesWagon); //La défausse devient la pile
-            Collections.shuffle(pileCartesWagon); //On mélange la nouvelle pile
-            defausseCartesWagon.clear(); //On vide la défausse
-            while(cartesWagonVisibles.size()<5){
-                cartesWagonVisibles.add(piocherCarteWagon());
-            }
+            defausserDansPile();
         }
-        else {
-            cartePiochee = pileCartesWagon.remove(0); //On pioche une carte
-        }
+        cartePiochee = pileCartesWagon.remove(0); //On pioche une carte
+
         return cartePiochee; //On la retourne
     }
 
@@ -226,28 +220,14 @@ public class Jeu implements Runnable {
     /**     by lolo     **/
     public void retirerCarteWagonVisible(CouleurWagon c) {
 
-        int compteurLocomotives = 0;
-        if (!cartesWagonVisibles.isEmpty()){ //S'il y a des cartes dans la pioche visible
+        if (!cartesWagonVisibles.isEmpty()) { //S'il y a des cartes dans la pioche visible
             joueurCourant.setCartesWagon(c); //On donne la carte au joueur
             cartesWagonVisibles.remove(c); //On la retire de la pile
-            if(!pileCartesWagon.isEmpty()) {
+            if (!pileCartesWagon.isEmpty()) {
                 cartesWagonVisibles.add(piocherCarteWagon()); //On en remet une (pour en avoir toujours 5)
             }
-
-            for(CouleurWagon couleur : cartesWagonVisibles){
-                if(couleur.name().equals("LOCOMOTIVE")){
-                    compteurLocomotives++;
-                }
-            }
-            if(compteurLocomotives >= 3){ //S'il y a 3 locomotives dans la pioche visible
-                defausseCartesWagon.addAll(cartesWagonVisibles); //On met toute la pioche visible dans la défausse
-                cartesWagonVisibles.clear(); //On vide la pioche visible
-                for(int i = 0; i<5;i++){ //On rajoute 5 nouvelles cartes dans la pioche visible
-                    cartesWagonVisibles.add(piocherCarteWagon());
-                }
-            }
+            verificationLocomotivesPiocheVisible();
         }
-
     }
 
     // Pioche et renvoie la destination du dessus de la pile de destinations.
@@ -265,6 +245,36 @@ public class Jeu implements Runnable {
     //Getter
     public List<Joueur> getJoueurs() {
         return joueurs;
+    }
+
+    public void defausserDansPile(){
+        //Si la pile est vide mais pas la défausse
+        log(pileCartesWagon.toString());
+        pileCartesWagon.addAll(defausseCartesWagon); //La défausse devient la pile
+        log(defausseCartesWagon.toString());
+        log(pileCartesWagon.toString());
+        Collections.shuffle(pileCartesWagon); //On mélange la nouvelle pile
+        defausseCartesWagon.clear(); //On vide la défausse
+        log(defausseCartesWagon.toString());
+        while (cartesWagonVisibles.size() < 5) {
+            cartesWagonVisibles.add(piocherCarteWagon());
+        }
+    }
+
+    public void verificationLocomotivesPiocheVisible(){
+        int compteurLocomotives = 0;
+        for(CouleurWagon couleur : cartesWagonVisibles){
+            if(couleur.name().equals("LOCOMOTIVE")){
+                compteurLocomotives++;
+            }
+        }
+        if(compteurLocomotives >= 3){ //S'il y a 3 locomotives dans la pioche visible
+            defausseCartesWagon.addAll(cartesWagonVisibles); //On met toute la pioche visible dans la défausse
+            cartesWagonVisibles.clear(); //On vide la pioche visible
+            for(int i = 0; i<5;i++){ //On rajoute 5 nouvelles cartes dans la pioche visible
+                cartesWagonVisibles.add(piocherCarteWagon());
+            }
+        }
     }
 
     @Override
