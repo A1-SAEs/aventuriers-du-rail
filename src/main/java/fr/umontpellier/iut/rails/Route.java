@@ -79,13 +79,23 @@ public class Route {
         if(this.getCouleur() == CouleurWagon.GRIS){
             for(CouleurWagon couleurWagon : listeCouleurWagons){
                 if(joueur.nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) + joueur.nombreCouleurWagonJoueur(couleurWagon) >= prixRoute){
-                    choixCartesPossibles.add(couleurWagon.name());
+                    if(joueur.nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) > 0){
+                        choixCartesPossibles.add(CouleurWagon.LOCOMOTIVE.name());
+                    }
+                    if(joueur.nombreCouleurWagonJoueur(couleurWagon) > 0) {
+                        choixCartesPossibles.add(couleurWagon.name());
+                    }
                 }
             }
         }
         else{
             if(joueur.nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) + joueur.nombreCouleurWagonJoueur(this.getCouleur()) >= prixRoute){
-                choixCartesPossibles.add(this.getCouleur().name());
+                if(joueur.nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) > 0){
+                    choixCartesPossibles.add(CouleurWagon.LOCOMOTIVE.name());
+                }
+                if(joueur.nombreCouleurWagonJoueur(this.getCouleur()) > 0) {
+                    choixCartesPossibles.add(this.getCouleur().name());
+                }
                 couleurChoisie = this.getCouleur();
             }
         }
@@ -117,12 +127,20 @@ public class Route {
                 jeu.defausserCarteWagon(couleurChoisie);
                 prixRoute--;
             }
+
+            if(couleurChoisie != null && joueur.nombreCouleurWagonJoueur(couleurChoisie) < 0){
+                choixCartesPossibles.remove(couleurChoisie.name());
+            }
+
+            if(joueur.nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) < 0){
+                choixCartesPossibles.remove(CouleurWagon.LOCOMOTIVE.name());
+            }
         }
         this.setProprietaire(joueur);
         joueur.setNbWagons(joueur.getNbWagons()-this.getLongueur());
     }
 
-    public boolean peutPrendreRoute(Joueur joueur, Jeu jeu){
+    public boolean peutPrendreRoute(Joueur joueur){
         List<CouleurWagon> listeCouleurWagons = CouleurWagon.getCouleursSimples();
         
         if(this.getProprietaire() == null) {
@@ -136,13 +154,29 @@ public class Route {
             }
             //Cas couleur -> Route couleur -> Assez de carte de la même couleur (avec ou sans loco)
             else {
-                if (joueur.nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) + joueur.nombreCouleurWagonJoueur(this.getCouleur()) >= this.getLongueur());{
+                if (joueur.nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) + joueur.nombreCouleurWagonJoueur(this.getCouleur()) >= this.getLongueur()){
                     return true;
                 }
             }
         }
         return false;
     }
+
+    public boolean peutPrendreRouteDouble(Joueur joueur, Jeu jeu){
+        int nombreJoueurs = jeu.getJoueurs().size();
+        List<Route> listeRoutes = jeu.getRoutes();
+        for(Route route : listeRoutes){
+            if(this.getVille1().equals(route.getVille1()) && this.getVille2().equals(route.getVille2()) && !this.getNom().equals(route.getNom())){
+                if(nombreJoueurs > 3){
+                    return route.getProprietaire() == null || route.getProprietaire() != joueur;
+                }
+                else{
+                    return this.getProprietaire() == null && route.getProprietaire() == null;
+                    }
+                }
+            }
+        return true;
+        }
 
     @Override
     public String toString() {

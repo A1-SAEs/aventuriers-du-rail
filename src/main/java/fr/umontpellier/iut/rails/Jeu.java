@@ -240,7 +240,6 @@ public class Jeu implements Runnable {
             }
             defausserDansPile();
         }
-        log(pileCartesWagon.toString());
         cartePiochee = pileCartesWagon.remove(0); //On pioche une carte
 
         return cartePiochee; //On la retourne

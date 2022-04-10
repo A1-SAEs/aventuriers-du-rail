@@ -6,14 +6,9 @@ import java.util.List;
 
 public class Tunnel extends Route {
 
-    private List<CouleurWagon> prixBonus;
-
     //////Initialisation d'un tunnel//////
-
-
     public Tunnel(Ville ville1, Ville ville2, int longueur, CouleurWagon couleur) {
         super(ville1, ville2, longueur, couleur);
-        this.prixBonus = new ArrayList<>();
     }
 
     @Override
@@ -21,86 +16,45 @@ public class Tunnel extends Route {
         return "[" + super.toString() + "]";
     }
 
-    public void peutPrendreRouteBonus(Joueur joueur, Jeu jeu){
-        CouleurWagon carteBonus=null;
-        for(int i =0; i<3;i++) {
-            carteBonus=jeu.piocherCarteWagon();
-            this.prixBonus.add(carteBonus);
-            jeu.defausserCarteWagon(carteBonus);
-        }
-    }
-
-    @Override
-    public boolean peutPrendreRoute(Joueur joueur, Jeu jeu){
-        List<CouleurWagon> listeCouleurWagons = CouleurWagon.getCouleursSimples();
-        List<Route> listeRoutes = jeu.getRoutes();
-
-        if(this.getProprietaire() == null) {
-            //Cas normal -> Route grise -> Assez de carte de la même couleur (avec ou sans loco)
-            int frequenceBonus =0;
-            if (this.getCouleur().equals(CouleurWagon.GRIS)) {
-                for (CouleurWagon couleurWagon : listeCouleurWagons) {
-                    frequenceBonus = Collections.frequency(prixBonus,couleurWagon);
-                    if(couleurWagon!=CouleurWagon.LOCOMOTIVE){
-                        frequenceBonus += Collections.frequency(prixBonus,CouleurWagon.LOCOMOTIVE);
-                    }
-                    if (joueur.nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) + joueur.nombreCouleurWagonJoueur(couleurWagon) >= this.getLongueur()+frequenceBonus) {
-                        return true;
-                    }
-                }
-            }
-            //Cas couleur -> Route couleur -> Assez de carte de la même couleur (avec ou sans loco)
-            else {
-                frequenceBonus = Collections.frequency(prixBonus,this.getCouleur())+Collections.frequency(prixBonus,CouleurWagon.LOCOMOTIVE);
-                if (joueur.nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) + joueur.nombreCouleurWagonJoueur(this.getCouleur()) >= this.getLongueur()+frequenceBonus){
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     @Override
     public void prendreRoute(Joueur joueur, Jeu jeu){
-        int prixRoute =0;
+        int prixRoute = this.getLongueur();
         CouleurWagon couleurChoisie = null;
         List<CouleurWagon> listeCouleurWagons = CouleurWagon.getCouleursSimples();
-        ArrayList<String> choixCartesPossibles = new ArrayList<>();
-
-
-
-        int frequenceBonus=0;
+        List<String> choixCartesPossibles = new ArrayList<>();
+        List<String> choixCartesSupplementairesPossibles = new ArrayList<>();
         if(this.getCouleur() == CouleurWagon.GRIS){
-
             for(CouleurWagon couleurWagon : listeCouleurWagons){
-                frequenceBonus = Collections.frequency(prixBonus,couleurWagon);
-                if(couleurWagon!=CouleurWagon.LOCOMOTIVE){
-                    frequenceBonus += Collections.frequency(prixBonus,CouleurWagon.LOCOMOTIVE);
-                }
-                if(joueur.nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) + joueur.nombreCouleurWagonJoueur(couleurWagon) >= this.getLongueur()+frequenceBonus){
-                    choixCartesPossibles.add(couleurWagon.name());
+                if(joueur.nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) + joueur.nombreCouleurWagonJoueur(couleurWagon) >= prixRoute){
+                    if(joueur.nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) > 0){
+                        choixCartesPossibles.add(CouleurWagon.LOCOMOTIVE.name());
+                    }
+                    if(joueur.nombreCouleurWagonJoueur(couleurWagon) > 0) {
+                        choixCartesPossibles.add(couleurWagon.name());
+                    }
                 }
             }
         }
         else{
-            frequenceBonus = Collections.frequency(prixBonus,this.getCouleur())+Collections.frequency(prixBonus,CouleurWagon.LOCOMOTIVE);
-            if(joueur.nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) + joueur.nombreCouleurWagonJoueur(this.getCouleur()) >= this.getLongueur()+frequenceBonus){
-                choixCartesPossibles.add(this.getCouleur().name());
+            if(joueur.nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) + joueur.nombreCouleurWagonJoueur(this.getCouleur()) >= prixRoute){
+                if(joueur.nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) > 0){
+                    choixCartesPossibles.add(CouleurWagon.LOCOMOTIVE.name());
+                }
+                if(joueur.nombreCouleurWagonJoueur(this.getCouleur()) > 0) {
+                    choixCartesPossibles.add(this.getCouleur().name());
+                }
                 couleurChoisie = this.getCouleur();
             }
         }
 
-        choixCartesPossibles.add(CouleurWagon.LOCOMOTIVE.name());
 
-
-
-        while(prixRoute < this.getLongueur()){
-            String choixJoueur = joueur.choisir("Choisissez " + (this.getLongueur()-prixRoute) + " carte(s) à défausser", choixCartesPossibles, new ArrayList<>(), false);
+        while(prixRoute != 0){
+            String choixJoueur = joueur.choisir("Choisissez " + prixRoute + " carte(s) à défausser", choixCartesPossibles, new ArrayList<>(), false);
 
             if(choixJoueur.equals(CouleurWagon.LOCOMOTIVE.name())){
                 joueur.getCartesWagon().remove((CouleurWagon.LOCOMOTIVE));
-                jeu.defausserCarteWagon(CouleurWagon.LOCOMOTIVE);
-                prixRoute++;
+                joueur.setCartesWagonPosees(CouleurWagon.LOCOMOTIVE);
+                prixRoute--;
             }
 
             if(couleurChoisie==null){
@@ -108,55 +62,100 @@ public class Tunnel extends Route {
                     if(choixJoueur.equals(couleurWagon.name())){
                         couleurChoisie = couleurWagon;
                         joueur.getCartesWagon().remove(couleurChoisie);
-                        jeu.defausserCarteWagon(couleurChoisie);
-                        prixRoute++;
+                        joueur.setCartesWagonPosees(couleurChoisie);
+                        prixRoute--;
                     }
                 }
             }
 
             else if(choixJoueur.equals(couleurChoisie.name())){
                 joueur.getCartesWagon().remove(couleurChoisie);
-                jeu.defausserCarteWagon(couleurChoisie);
-                prixRoute++;
+                joueur.setCartesWagonPosees(couleurChoisie);
+                prixRoute--;
+            }
+
+            if(couleurChoisie != null && joueur.nombreCouleurWagonJoueur(couleurChoisie) < 0){
+                choixCartesPossibles.remove(couleurChoisie.name());
+            }
+
+            if(joueur.nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) < 0){
+                choixCartesPossibles.remove(CouleurWagon.LOCOMOTIVE.name());
             }
         }
 
-        if(couleurChoisie==null) {
-            frequenceBonus = Collections.frequency(prixBonus, couleurChoisie) + Collections.frequency(prixBonus, CouleurWagon.LOCOMOTIVE);
+        if(joueur.nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) == joueur.getCartesWagonPosees().size()){
+            couleurChoisie = null;
         }
+
+        int nbCartesAPayerEnPlus = 0;
+        for(int i=0; i<3; i++){
+            CouleurWagon cartePiochee = jeu.piocherCarteWagon();
+            if(cartePiochee.equals(couleurChoisie) || cartePiochee.equals(CouleurWagon.LOCOMOTIVE)){
+                nbCartesAPayerEnPlus++;
+            }
+
+            jeu.defausserCarteWagon(cartePiochee);
+        }
+
+        if(nbCartesAPayerEnPlus == 0){
+            for(CouleurWagon cartePosee : joueur.getCartesWagonPosees()){
+                jeu.defausserCarteWagon(cartePosee);
+            }
+            this.setProprietaire(joueur);
+            joueur.setNbWagons(joueur.getNbWagons()-this.getLongueur());
+        }
+
         else {
-        frequenceBonus=Collections.frequency(prixBonus,CouleurWagon.LOCOMOTIVE);
-        }
-
-        while (prixRoute<this.getLongueur()+frequenceBonus){
-            String choixJoueur = joueur.choisir("Choisissez " + (this.getLongueur()+frequenceBonus-prixRoute) + " carte(s) à défausser", choixCartesPossibles, new ArrayList<>(), false);
-
-            if(choixJoueur.equals(CouleurWagon.LOCOMOTIVE.name())){
-                joueur.getCartesWagon().remove((CouleurWagon.LOCOMOTIVE));
-                jeu.defausserCarteWagon(CouleurWagon.LOCOMOTIVE);
-                prixRoute++;
-            }
-
-            if(couleurChoisie==null){
-                for(CouleurWagon couleurWagon : listeCouleurWagons){
-                    if(choixJoueur.equals(couleurWagon.name())){
-                        couleurChoisie = couleurWagon;
-                        joueur.getCartesWagon().remove(couleurChoisie);
-                        jeu.defausserCarteWagon(couleurChoisie);
-                        prixRoute++;
-                    }
+            if (couleurChoisie == null) {
+                if (joueur.nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) >= nbCartesAPayerEnPlus) {
+                    choixCartesSupplementairesPossibles.add(CouleurWagon.LOCOMOTIVE.name());
+                }
+            } else if (joueur.nombreCouleurWagonJoueur(couleurChoisie) + joueur.nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) >= nbCartesAPayerEnPlus) {
+                if (joueur.nombreCouleurWagonJoueur(couleurChoisie) > 0) {
+                    choixCartesSupplementairesPossibles.add(couleurChoisie.name());
+                }
+                if (joueur.nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) > 0) {
+                    choixCartesSupplementairesPossibles.add(CouleurWagon.LOCOMOTIVE.name());
                 }
             }
 
-            else if(choixJoueur.equals(couleurChoisie.name())){
-                joueur.getCartesWagon().remove(couleurChoisie);
-                jeu.defausserCarteWagon(couleurChoisie);
-                prixRoute++;
+            String choixJoueur = joueur.choisir("Choisissez " + nbCartesAPayerEnPlus + " carte(s) à défausser supplémentaires ou passez", choixCartesSupplementairesPossibles, new ArrayList<>(), true);
+            if(choixJoueur.equals(CouleurWagon.LOCOMOTIVE.name())){
+                jeu.defausserCarteWagon(CouleurWagon.LOCOMOTIVE);
+                joueur.getCartesWagon().remove(CouleurWagon.LOCOMOTIVE);
+                nbCartesAPayerEnPlus--;
             }
+            else if(couleurChoisie != null && choixJoueur.equals(couleurChoisie.name())){
+                jeu.defausserCarteWagon(couleurChoisie);
+                joueur.getCartesWagon().remove(couleurChoisie);
+                nbCartesAPayerEnPlus--;
+            }
+            else if(choixJoueur.equals("")){
+                for(CouleurWagon cartesPosee : joueur.getCartesWagonPosees()){
+                    joueur.setCartesWagon(cartesPosee);
+                }
+                return;
+            }
+
+            while(nbCartesAPayerEnPlus != 0){
+                choixJoueur = joueur.choisir("Choisissez " + nbCartesAPayerEnPlus + " carte(s) à défausser supplémentaires", choixCartesPossibles, new ArrayList<>(), false);
+                if(choixJoueur.equals(CouleurWagon.LOCOMOTIVE.name())){
+                    jeu.defausserCarteWagon(CouleurWagon.LOCOMOTIVE);
+                    joueur.getCartesWagon().remove(CouleurWagon.LOCOMOTIVE);
+                    nbCartesAPayerEnPlus--;
+                }
+                else if(couleurChoisie != null && choixJoueur.equals(couleurChoisie.name())){
+                    jeu.defausserCarteWagon(couleurChoisie);
+                    joueur.getCartesWagon().remove(couleurChoisie);
+                    nbCartesAPayerEnPlus--;
+                }
+            }
+
+            for(CouleurWagon cartePosee : joueur.getCartesWagonPosees()){
+                jeu.defausserCarteWagon(cartePosee);
+            }
+            this.setProprietaire(joueur);
+            joueur.setNbWagons(joueur.getNbWagons()-this.getLongueur());
         }
-
-
-        this.setProprietaire(joueur);
-        joueur.setNbWagons(joueur.getNbWagons()-this.getLongueur());
     }
 }

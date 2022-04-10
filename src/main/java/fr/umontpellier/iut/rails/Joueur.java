@@ -336,7 +336,10 @@ public class Joueur {
         for(Route route : listeRoutes){
             if(route.getNom().equals(choixTour)){
                 route.prendreRoute(this, jeu);
-                calculerPointsRoute(route);
+                if(route.getProprietaire() == this) {
+                    calculerPointsRoute(route);
+                }
+                cartesWagonPosees.clear();
                 log(this.toLog() + " a capturé la route " + route.toLog());
                 break;
             }
@@ -363,7 +366,7 @@ public class Joueur {
         }
 
         for(Route route : listeRoutes){
-            if(route.peutPrendreRoute(this, jeu)){  //Route sans propriétaire, que le joueur peut prendre (assez de cartes, assez de wagon et pas une route double déjà prise)
+            if(route.peutPrendreRouteDouble(this, jeu) && route.peutPrendreRoute(this)){  //Route sans propriétaire, que le joueur peut prendre (assez de cartes, assez de wagon et pas une route double déjà prise)
                 choix.add(route.getNom()); //Ajout de toutes les routes possibles
             }
         }

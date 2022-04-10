@@ -21,9 +21,8 @@ public class Ferry extends Route {
     }
 
     @Override
-    public boolean peutPrendreRoute(Joueur joueur, Jeu jeu){
+    public boolean peutPrendreRoute(Joueur joueur){
         List<CouleurWagon> listeCouleurWagons = CouleurWagon.getCouleursSimples();
-        List<Route> listeRoutes = jeu.getRoutes();
 
         if(this.getProprietaire() == null) {
             //Cas normal -> Route grise -> Assez de carte de la même couleur (avec ou sans loco)
@@ -56,11 +55,14 @@ public class Ferry extends Route {
 
         for(CouleurWagon couleurWagon : listeCouleurWagons){
             if(joueur.nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) + joueur.nombreCouleurWagonJoueur(couleurWagon) >= this.getLongueur()-nbLocomotives){
-                choixCartesPossibles.add(couleurWagon.name());
+                if(joueur.nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) > 0){
+                    choixCartesPossibles.add(CouleurWagon.LOCOMOTIVE.name());
+                }
+                if(joueur.nombreCouleurWagonJoueur(couleurWagon) > 0) {
+                    choixCartesPossibles.add(couleurWagon.name());
+                }
             }
         }
-
-        choixCartesPossibles.add(CouleurWagon.LOCOMOTIVE.name());
 
         while(prixRoute <this.getLongueur()){
             String choixJoueur = joueur.choisir("Choisissez " + prixRoute + " carte(s) à défausser (hors locomotives obligatoires demandées par le ferry)", choixCartesPossibles, new ArrayList<>(), false);
@@ -86,6 +88,14 @@ public class Ferry extends Route {
                 joueur.getCartesWagon().remove(couleurChoisie);
                 jeu.defausserCarteWagon(couleurChoisie);
                 prixRoute++;
+            }
+
+            if(couleurChoisie != null && joueur.nombreCouleurWagonJoueur(couleurChoisie) < 0){
+                choixCartesPossibles.remove(couleurChoisie.name());
+            }
+
+            if(joueur.nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) < 0){
+                choixCartesPossibles.remove(CouleurWagon.LOCOMOTIVE.name());
             }
         }
         this.setProprietaire(joueur);
