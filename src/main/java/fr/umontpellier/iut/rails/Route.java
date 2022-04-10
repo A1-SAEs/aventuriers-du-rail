@@ -136,7 +136,9 @@ public class Route {
             }
             //Cas couleur -> Route couleur -> Assez de carte de la même couleur (avec ou sans loco)
             else {
-                return (joueur.nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) + joueur.nombreCouleurWagonJoueur(this.getCouleur()) >= this.getLongueur());
+                if (joueur.nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) + joueur.nombreCouleurWagonJoueur(this.getCouleur()) >= this.getLongueur());{
+                    return true;
+                }
             }
         }
         return false;

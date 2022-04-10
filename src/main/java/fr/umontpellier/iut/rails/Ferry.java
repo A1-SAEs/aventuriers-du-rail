@@ -25,7 +25,7 @@ public class Ferry extends Route {
         List<CouleurWagon> listeCouleurWagons = CouleurWagon.getCouleursSimples();
         List<Route> listeRoutes = jeu.getRoutes();
 
-        if(this.getProprietaire() == null || this.getProprietaire()!=joueur) {
+        if(this.getProprietaire() == null) {
             //Cas normal -> Route grise -> Assez de carte de la même couleur (avec ou sans loco)
             for (CouleurWagon couleurWagon : listeCouleurWagons) {
                 if (joueur.nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) + joueur.nombreCouleurWagonJoueur(couleurWagon) >= this.getLongueur() && joueur.nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE)>=this.nbLocomotives) {
