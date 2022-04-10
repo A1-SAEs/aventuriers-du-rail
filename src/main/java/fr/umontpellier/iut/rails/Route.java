@@ -67,6 +67,8 @@ public class Route {
         this.nom = nom;
     }
 
+
+
     public String toLog() {
         return String.format("<span class=\"route\">%s - %s</span>", ville1.getNom(), ville2.getNom());
     }
@@ -154,5 +156,79 @@ public class Route {
             data.put("proprietaire", proprietaire.getCouleur());
         }
         return data;
+    }
+
+    public boolean peutPrendreRoute(Joueur joueur, Jeu jeu){
+        List<CouleurWagon> listeCouleurWagons = CouleurWagon.getCouleursSimples();
+        List<Route> listeRoutes = jeu.getRoutes();
+
+        if(this.getProprietaire() == null || this.getProprietaire()!=joueur) {
+            //Cas normal -> Route grise -> Assez de carte de la même couleur (avec ou sans loco)
+            if (this.getCouleur().equals(CouleurWagon.GRIS)) {
+                for (CouleurWagon couleurWagon : listeCouleurWagons) {
+                    if (joueur.nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) + joueur.nombreCouleurWagonJoueur(couleurWagon) >= this.getLongueur()) {
+                        return true;
+                    }
+                }
+            }
+            //Cas couleur -> Route couleur -> Assez de carte de la même couleur (avec ou sans loco)
+            else {
+                if (joueur.nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) + joueur.nombreCouleurWagonJoueur(this.getCouleur()) >= this.getLongueur()){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void prendreRoute(Joueur joueur, Jeu jeu){
+        int prixRoute = this.getLongueur();
+        CouleurWagon couleurChoisie = null;
+        List<CouleurWagon> listeCouleurWagons = CouleurWagon.getCouleursSimples();
+        ArrayList<String> choixCartesPossibles = new ArrayList<>();
+        if(this.getCouleur() == CouleurWagon.GRIS){
+            for(CouleurWagon couleurWagon : listeCouleurWagons){
+                if(joueur.nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) + joueur.nombreCouleurWagonJoueur(couleurWagon) >= prixRoute){
+                    choixCartesPossibles.add(couleurWagon.name());
+                }
+            }
+        }
+        else{
+            if(joueur.nombreCouleurWagonJoueur(CouleurWagon.LOCOMOTIVE) + joueur.nombreCouleurWagonJoueur(this.getCouleur()) >= prixRoute){
+                choixCartesPossibles.add(this.getCouleur().name());
+                couleurChoisie = this.getCouleur();
+            }
+        }
+
+        choixCartesPossibles.add(CouleurWagon.LOCOMOTIVE.name());
+
+        while(prixRoute != 0){
+            String choixJoueur = joueur.choisir("Choississez une carte à défausser", choixCartesPossibles, new ArrayList<>(), false);
+
+            if(choixJoueur.equals(CouleurWagon.LOCOMOTIVE.name())){
+                joueur.getCartesWagon().remove((CouleurWagon.LOCOMOTIVE));
+                jeu.defausserCarteWagon(CouleurWagon.LOCOMOTIVE);
+                prixRoute--;
+            }
+
+            if(couleurChoisie==null){
+                for(CouleurWagon couleurWagon : listeCouleurWagons){
+                    if(choixJoueur.equals(couleurWagon.name())){
+                        couleurChoisie = couleurWagon;
+                        joueur.getCartesWagon().remove(couleurChoisie);
+                        jeu.defausserCarteWagon(couleurChoisie);
+                        prixRoute--;
+                    }
+                }
+            }
+
+            else if(choixJoueur.equals(couleurChoisie.name())){
+                joueur.getCartesWagon().remove(couleurChoisie);
+                jeu.defausserCarteWagon(couleurChoisie);
+                prixRoute--;
+            }
+        }
+        this.setProprietaire(joueur);
+        joueur.setNbWagons(joueur.getNbWagons()-this.getLongueur());
     }
 }
