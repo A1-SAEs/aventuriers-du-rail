@@ -46,7 +46,7 @@ public class Joueur {
         this.jeu = jeu;
         this.couleur = couleur;
         nbGares = 3;
-        nbWagons = 10;
+        nbWagons = 45;
         cartesWagon = new ArrayList<>();
         cartesWagonPosees = new ArrayList<>();
         destinations = new ArrayList<>();
@@ -306,6 +306,9 @@ public class Joueur {
         }
 
         if(choixTour.equals("GRIS")){ //Le joueur pioche une carte dans la pioche
+            if(jeu.getPileCartesWagon().isEmpty() && !jeu.getDefausseCartesWagon().isEmpty()) {
+                jeu.defausserDansPile();
+            }
             this.cartesWagon.add(jeu.piocherCarteWagon()); //On lui rajoute
             log(this.toLog() + " a pioché");
             piocherDeuxiemeCarte(); //Il pioche une 2e carte

@@ -240,6 +240,7 @@ public class Jeu implements Runnable {
             }
             defausserDansPile();
         }
+        log(pileCartesWagon.toString());
         cartePiochee = pileCartesWagon.remove(0); //On pioche une carte
 
         return cartePiochee; //On la retourne
@@ -280,13 +281,9 @@ public class Jeu implements Runnable {
 
     public void defausserDansPile(){
         //Si la pile est vide mais pas la défausse
-        log(pileCartesWagon.toString());
         pileCartesWagon.addAll(defausseCartesWagon); //La défausse devient la pile
-        log(defausseCartesWagon.toString());
-        log(pileCartesWagon.toString());
         Collections.shuffle(pileCartesWagon); //On mélange la nouvelle pile
         defausseCartesWagon.clear(); //On vide la défausse
-        log(defausseCartesWagon.toString());
         while (cartesWagonVisibles.size() < 5) {
             cartesWagonVisibles.add(piocherCarteWagon());
         }
